@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using GoRogue;
+
 namespace GrimDank
 {
     /// <summary>
@@ -14,6 +16,9 @@ namespace GrimDank
         
         public GrimDank()
         {
+            // GoRogue test.
+            System.Console.WriteLine(Coord.Get(1, 2));
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
