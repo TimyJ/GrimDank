@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using rectangle = Microsoft.Xna.Framework.Rectangle;
 
 using GoRogue;
 
@@ -9,10 +10,32 @@ namespace GrimDank
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+    /// 
+
+    public class Cell
+    {
+        public Color foreground;
+        public Color background;
+        public char glyph;
+
+        public Cell()
+        {
+            foreground = Color.White;
+            background = Color.Black;
+            glyph = '.';
+        }
+    }
+
     public class GrimDank : Game
     {
+        
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        private Texture2D font12x12;
+        private Cell[] testing;
+        private static int testMapWidth = 50;
+        private static int testMapHeight = 50;
+        private static int fontColums = 16;
         
         public GrimDank()
         {
@@ -21,6 +44,14 @@ namespace GrimDank
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            testing = new Cell[testMapWidth * testMapHeight];
+            for(int i = 0; i < testing.Length; ++i)
+            {
+                testing[i] = new Cell();
+            }
+
+            //check setting cells;
+            testing[30].glyph = '@';
         }
 
         /// <summary>
@@ -44,6 +75,9 @@ namespace GrimDank
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            //load font from the content manager
+            font12x12 = Content.Load<Texture2D>("font12x12");
 
             // TODO: use this.Content to load your game content here
         }
@@ -80,9 +114,23 @@ namespace GrimDank
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            //test drawing
+            spriteBatch.Begin();
+            for(int i=0; i < testMapHeight*testMapWidth; ++i)
+            {
+                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
+                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
+            }
+            spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private rectangle GlyphRect(char Character)
+        {
+            int cx = (Character) % fontColums;
+            int cy = (Character) / fontColums;
+            return new rectangle(cx*12, cy*12, 12, 12);
         }
     }
 }
