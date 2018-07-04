@@ -103,7 +103,7 @@ namespace GrimDank
             return false;
         }
 
-        public MObject Raycast(Coord position) => Raycast(position, (Layer)(_layerSize - 1));
+        public MObject Raycast(Coord position) => Raycast(position, (Layer)(_layerSize - 1), a => true);
 
         public MObject Raycast(Coord position, Layer layer) => Raycast(position, layer, a => true);
 
