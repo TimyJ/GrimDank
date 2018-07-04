@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace GrimDank
 {
     // I define this stuff in a separate C# file even though it is literally part of the same class (Map).  Just because this stuff rarely
-    // ever gets touched and is mostly back-end related, so less clutter in the Map.cs file.
+    // ever gets touched unless you are changing number/order of layers and is mostly back-end related, so less clutter in the Map.cs file.
     partial class Map
     {
         // You CANNOT assign these enum values to start at any integer other than 0 or things break.  Depends on the first item in the enum
@@ -23,7 +23,7 @@ namespace GrimDank
             { Layer.CREATURES, false }
         };
 
-        // Dictionary is only used above for ease of maintenance, this is used to check in production code
+        // Dictionary is only used above for ease of maintenance, this is used as the actual code reference.
         private static readonly bool[] _layerCanHaveMultipleItems;
 
         private static readonly int _layerSize;
