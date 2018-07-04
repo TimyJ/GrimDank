@@ -13,6 +13,7 @@ namespace GrimDank
         [STAThread]
         static void Main()
         {
+            Map map = new Map();
             using (var game = new GrimDank())
                 game.Run();
         }

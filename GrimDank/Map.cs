@@ -1,54 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using GoRogue;
 using GrimDank.MObjects;
 
 
 namespace GrimDank
 {
-    class Map
-    {
-        // Right now you CANNOT assign these enum values to start at any integer other than 0 or things break.  Depends on integer conversion
-        // being 0,...,Layer.Size - 1
-        public enum Layer
-        { ITEMS, CREATURES }
-
-
-        // Array saying whether each of the layers in the Layers enum can have multiple items on that layer
-        // or not (ones like creature that never should shouldn't allow it for optimization reasons.  Should always be the same size as the Layers array
-        // and it will fail horribly at runtime if its not.
-        private static readonly bool[] _layerCanHaveMultipleItems =
-        { false, true };
-
-        private static readonly int _layerSize = Enum.GetNames(typeof(Layer)).Length;
-
+    partial class Map
+    { 
         // MObject layers.
-        private List<ISpatialMap<MObject>> _mObjects;
+        private List<ISpatialMap<MObject>> _layers;
+
+        // Get all MObjects.
+        public IEnumerable<MObject> MObjects
+        {
+            get
+            {
+                foreach (var layer in _layers)
+                    foreach (var item in layer.Items)
+                        yield return item;
+            }
+        }
 
         public Map()
         {
-            _mObjects = new List<ISpatialMap<MObject>>();
+            _layers = new List<ISpatialMap<MObject>>();
 
             for (int i = 0; i < _layerSize; i++)
             {
                 if (_layerCanHaveMultipleItems[i])
-                    _mObjects.Add(new MultiSpatialMap<MObject>());
+                    _layers.Add(new MultiSpatialMap<MObject>());
                 else
-                    _mObjects.Add(new SpatialMap<MObject>());
+                    _layers.Add(new SpatialMap<MObject>());
             }
         }
 
-        public IReadOnlySpatialMap<MObject> GetLayer(Layer layer) => _mObjects[(int)layer];
+        // Gets read-only SpatialMap for easy interaction or enumeration for a layer
+        public IReadOnlySpatialMap<MObject> GetLayer(Layer layer) => _layers[(int)layer].AsReadOnly();
+
+        // Gets all layers in a safe way, just in case you ever need to (you probaably don't).
+        public IEnumerable<IReadOnlySpatialMap<MObject>> GetLayers()
+        {
+            foreach (var layer in _layers)
+                yield return layer.AsReadOnly();
+        }
 
         public bool Add(MObject mObject) => Add(mObject, mObject.Position);
 
+        // Adds given MObject at given position (Position property of MObject will be automatically updated)
         public bool Add(MObject mObject, Coord position)
         {
             if (Collides(mObject, position))
                 return false;
 
-            if (!_mObjects[(int)mObject.Layer].Add(mObject, position))
+            if (!_layers[(int)mObject.Layer].Add(mObject, position))
                 return false;
 
             mObject.CurrentMap?.Remove(mObject);
@@ -62,7 +67,7 @@ namespace GrimDank
 
         public bool Remove(MObject mObject)
         {
-            if (!_mObjects[(int)mObject.Layer].Remove(mObject))
+            if (!_layers[(int)mObject.Layer].Remove(mObject))
                 return false;
 
             mObject.Moved -= OnMObjectMoved;
@@ -104,27 +109,18 @@ namespace GrimDank
         public MObject Raycast(Coord position, Layer layer, Predicate<MObject> predicate)
         {
             for (int i = (int)layer; i >= 0; i--)
-                foreach (var obj in _mObjects[i].GetItems(position))
+                foreach (var obj in _layers[i].GetItems(position))
                     if (predicate(obj))
                         return obj;
 
             return null;
         }
 
-        // Need to keep SpatialMap up to date; guaranteed to succeed since collision detection did the checks before this was ever called.
+        // Used just to keep SpatialMap up to date; guaranteed to succeed since collision detection did the checks before this was ever called.
         private void OnMObjectMoved(object s, MovedArgs e)
         {
             var mObject = (MObject)s;
-            _mObjects[(int)mObject.Layer].Move(mObject, e.NewPosition);
+            _layers[(int)mObject.Layer].Move(mObject, e.NewPosition);
         }
-
-        // Debug-only checks to make sure our array matches size of Layers.  Guaranteed to be run before the first Map instance is created, and gets us
-        // sensible error messages if we screw up. Don't really need to touch this.
-        static Map()
-        {
-            Debug.Assert(_layerCanHaveMultipleItems.Length == _layerSize);
-        }
-        // 
-
     }
 }

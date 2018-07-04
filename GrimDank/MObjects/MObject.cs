@@ -44,10 +44,8 @@ namespace GrimDank.MObjects
                     if (CurrentMap == null || !CurrentMap.Collides(this, value))
                     {
                         _position = value;
-
                         Moved?.Invoke(this, new MovedArgs(oldPos, value));
                     }
-
                 }
             }
         }
@@ -64,6 +62,14 @@ namespace GrimDank.MObjects
             IsTransparent = isTransparent;
 
             Moved = null;
+        }
+
+        public bool MoveIn(Direction direction)
+        {
+            var oldPos = _position;
+            Position += direction;
+
+            return !(_position == oldPos);
         }
 
         // Do NOT call this unless you are Map.Add/Remove functions.  Bad!
