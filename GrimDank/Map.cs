@@ -22,8 +22,14 @@ namespace GrimDank
             }
         }
 
-        public Map()
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public Map(int width, int height)
         {
+            Width = width;
+            Height = height;
+
             _layers = new List<ISpatialMap<MObject>>();
 
             for (int i = 0; i < _layerSize; i++)
@@ -97,12 +103,12 @@ namespace GrimDank
             return false;
         }
 
-        public MObject Raycast(Coord position) => Raycast(position, (Layer)_layerSize);
+        public MObject Raycast(Coord position) => Raycast(position, (Layer)(_layerSize - 1));
 
         public MObject Raycast(Coord position, Layer layer) => Raycast(position, layer, a => true);
 
 
-        public MObject Raycast(Coord position, Predicate<MObject> predicate) => Raycast(position, (Layer)_layerSize, predicate);
+        public MObject Raycast(Coord position, Predicate<MObject> predicate) => Raycast(position, (Layer)(_layerSize - 1), predicate);
 
         // Raycasts from the given layer down, at the given position.  Returns the first object found for which the given
         // predicate returns true.

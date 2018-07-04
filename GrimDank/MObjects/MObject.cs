@@ -53,11 +53,12 @@ namespace GrimDank.MObjects
         public event EventHandler<MovedArgs> Moved;
 
         // Can add parameters just here for ID stuff.
-        public MObject(Map.Layer layer, bool isWalkable = false, bool isTransparent = true)
+        public MObject(Map.Layer layer, Coord position, bool isWalkable = false, bool isTransparent = true)
         {
             ID = _idGen.UseID();
 
             Layer = layer;
+            Position = position;
             IsWalkable = isWalkable;
             IsTransparent = isTransparent;
 

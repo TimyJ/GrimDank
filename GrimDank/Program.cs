@@ -1,4 +1,9 @@
 ﻿using System;
+using GoRogue.MapGeneration.Generators;
+using GoRogue.MapViews;
+using GrimDank.MObjects;
+using System.Diagnostics;
+using GoRogue;
 
 namespace GrimDank
 {
@@ -13,9 +18,8 @@ namespace GrimDank
         [STAThread]
         static void Main()
         {
-            Map map = new Map();
             using (var game = new GrimDank())
                 game.Run();
-        }
+        } 
     }
 }

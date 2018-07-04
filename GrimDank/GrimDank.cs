@@ -39,9 +39,6 @@ namespace GrimDank
         
         public GrimDank()
         {
-            // GoRogue test.
-            System.Console.WriteLine(Coord.Get(1, 2));
-
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             testing = new Cell[testMapWidth * testMapHeight];

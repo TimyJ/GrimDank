@@ -50,6 +50,7 @@
     <Compile Include="GrimDank.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Map_Layers.cs" />
+    <Compile Include="MessageLog.cs" />
     <Compile Include="MObjects\MObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
