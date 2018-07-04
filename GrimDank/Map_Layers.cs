@@ -16,7 +16,7 @@ namespace GrimDank
         // or not (ones like creature that never should allow it, should say so, for optimization reasons.  Should always be the same size as
         // the Layers array and it will fail horribly at runtime if its not.
         private static readonly bool[] _layerCanHaveMultipleItems =
-        { false, true };
+        { true, false };
 
         private static readonly int _layerSize;
 
