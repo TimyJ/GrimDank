@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using GoRogue;
+﻿using GoRogue;
 using GrimDank.MObjects;
-
+using System;
+using System.Collections.Generic;
 
 namespace GrimDank
 {
     partial class Map
-    { 
+    {
         // Layers of MObjects.
         private List<ISpatialMap<MObject>> _layers;
-
-        // Get all MObjects in the map.
-        public IEnumerable<MObject> MObjects
-        {
-            get
-            {
-                foreach (var layer in _layers)
-                    foreach (var item in layer.Items)
-                        yield return item;
-            }
-        }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
 
         public Map(int width, int height)
         {
@@ -41,21 +26,28 @@ namespace GrimDank
             }
         }
 
-        // Gets read-only SpatialMap for easy interaction with or enumeration of a layer
-        public IReadOnlySpatialMap<MObject> GetLayer(Layer layer) => _layers[(int)layer].AsReadOnly();
+        public int Height { get; private set; }
 
-        // Gets all layers in a safe way, just in case you ever need to (but tbh you probably don't need to).
-        public IEnumerable<IReadOnlySpatialMap<MObject>> GetLayers()
+        // Get all MObjects in the map.
+        public IEnumerable<MObject> MObjects
         {
-            foreach (var layer in _layers)
-                yield return layer.AsReadOnly();
+            get
+            {
+                foreach (var layer in _layers)
+                    foreach (var item in layer.Items)
+                        yield return item;
+            }
         }
 
-        // Adds MObject to the map, at its position.  Returns false if it can't add.  Entity is removed from its current map (if any), if and only if the Add is successful.
+        public int Width { get; private set; }
+
+        // Adds MObject to the map, at its position. Returns false if it can't add. Entity is removed
+        // from its current map (if any), if and only if the Add is successful.
         public bool Add(MObject mObject) => Add(mObject, mObject.Position);
 
-        // Adds given MObject at the given position (Position property of MObject will be automatically updated, and entity is removed from its current map (if any),
-        // if and only if the Add was successful).  Returns false if it can't add.
+        // Adds given MObject at the given position (Position property of MObject will be
+        // automatically updated, and entity is removed from its current map (if any), if and only if
+        // the Add was successful). Returns false if it can't add.
         public bool Add(MObject mObject, Coord position)
         {
             if (Collides(mObject, position))
@@ -69,18 +61,6 @@ namespace GrimDank
 
             mObject.Moved += OnMObjectMoved;
             mObject._onMapChanged(this);
-
-            return true;
-        }
-
-        // Removes MObject from this map if it is in there, returning success.
-        public bool Remove(MObject mObject)
-        {
-            if (!_layers[(int)mObject.Layer].Remove(mObject))
-                return false;
-
-            mObject.Moved -= OnMObjectMoved;
-            mObject._onMapChanged(null);
 
             return true;
         }
@@ -107,16 +87,29 @@ namespace GrimDank
             return false;
         }
 
+        // Gets read-only SpatialMap for easy interaction with or enumeration of a layer
+        public IReadOnlySpatialMap<MObject> GetLayer(Layer layer) => _layers[(int)layer].AsReadOnly();
+
+        // Gets all layers in a safe way, just in case you ever need to (but tbh you probably don't
+        // need to).
+        public IEnumerable<IReadOnlySpatialMap<MObject>> GetLayers()
+        {
+            foreach (var layer in _layers)
+                yield return layer.AsReadOnly();
+        }
+
         // Returns the first MObject we find raycasting from the topmost layer down, or null if no MObject.
         public MObject Raycast(Coord position) => Raycast(position, (Layer)(_layerSize - 1), a => true);
 
         // Returns first MObject we find raycasting from the given layer down, or null if no MObject.
         public MObject Raycast(Coord position, Layer layer) => Raycast(position, layer, a => true);
 
-        // Returns first MObject we find for which the given predicate returns true, raycasting from the topmost layer down.  Null if no such MObject.
+        // Returns first MObject we find for which the given predicate returns true, raycasting from
+        // the topmost layer down. Null if no such MObject.
         public MObject Raycast(Coord position, Predicate<MObject> predicate) => Raycast(position, (Layer)(_layerSize - 1), predicate);
 
-        // Returns first MObject we find for which the given predicate returns true, raycasting from the given layer down.  Null if no such MObject.
+        // Returns first MObject we find for which the given predicate returns true, raycasting from
+        // the given layer down. Null if no such MObject.
         public MObject Raycast(Coord position, Layer layer, Predicate<MObject> predicate)
         {
             for (int i = (int)layer; i >= 0; i--)
@@ -127,7 +120,20 @@ namespace GrimDank
             return null;
         }
 
-        // Used just to keep SpatialMap up to date when things move; guaranteed to succeed since collision detection did the checks before this was ever called.
+        // Removes MObject from this map if it is in there, returning success.
+        public bool Remove(MObject mObject)
+        {
+            if (!_layers[(int)mObject.Layer].Remove(mObject))
+                return false;
+
+            mObject.Moved -= OnMObjectMoved;
+            mObject._onMapChanged(null);
+
+            return true;
+        }
+
+        // Used just to keep SpatialMap up to date when things move; guaranteed to succeed since
+        // collision detection did the checks before this was ever called.
         private void OnMObjectMoved(object s, MovedArgs e)
         {
             var mObject = (MObject)s;
