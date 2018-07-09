@@ -108,7 +108,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MonoGame.Framework.dll" />
+    <None Include="MonoGame.Framework.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="x64\SDL2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
