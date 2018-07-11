@@ -127,7 +127,6 @@ namespace GrimDank
                 var mob = testLevel.Raycast(pos);
                 if(mob != null)
                 {
-                    MessageLog.Write(mob.Position.ToString());
                     spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('@'), color: Color.White);
                 }
             }
