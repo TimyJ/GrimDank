@@ -47,6 +47,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FramerateCounter.cs" />
     <Compile Include="GrimDank.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Map_Layers.cs" />

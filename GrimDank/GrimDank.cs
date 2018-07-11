@@ -32,6 +32,8 @@ namespace GrimDank
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D font12x12;
+        private SpriteFont fpsFont;
+        private FrameCounter counter;
         private static int testMapWidth = 50;
         private static int testMapHeight = 50;
         private static int fontColums = 16;
@@ -53,6 +55,7 @@ namespace GrimDank
 
                 }
             }
+            counter = new FrameCounter();
 
         }
 
@@ -82,6 +85,8 @@ namespace GrimDank
             font12x12 = Content.Load<Texture2D>("font12x12");
             MessageLog.Write("Font Loaded");
 
+            fpsFont = Content.Load<SpriteFont>("_spritefont");
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -101,6 +106,7 @@ namespace GrimDank
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -117,8 +123,13 @@ namespace GrimDank
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            counter.Update(deltaTime);
+            
             //test drawing
             spriteBatch.Begin();
+            var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
+            spriteBatch.DrawString(fpsFont, frames, new Vector2(1, 1), Color.Black);
             for(int i=0; i < testMapHeight*testMapWidth; ++i)
             {
                 Coord pos = Coord.ToCoord(i, testMapWidth);
