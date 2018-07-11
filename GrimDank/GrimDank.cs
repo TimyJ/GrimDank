@@ -57,6 +57,9 @@ namespace GrimDank
             }
             counter = new FrameCounter();
 
+            graphics.SynchronizeWithVerticalRetrace = false;
+            IsFixedTimeStep = false;
+
         }
 
         /// <summary>
