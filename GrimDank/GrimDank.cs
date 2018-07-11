@@ -34,16 +34,20 @@ namespace GrimDank
         private Texture2D font12x12;
         private SpriteFont fpsFont;
         private FrameCounter counter;
-        private static int testMapWidth = 50;
-        private static int testMapHeight = 50;
+        private static int testMapWidth = 160;
+        private static int testMapHeight = 90;
         private static int fontColums = 16;
         private Map testLevel;
         
         public GrimDank()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = testMapWidth * 12;
+            graphics.PreferredBackBufferHeight = testMapHeight * 12;
+            graphics.ApplyChanges();
+
             Content.RootDirectory = "Content";
-            testLevel = new Map(20, 20);
+            testLevel = new Map(testMapWidth, testMapHeight);
             var player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
             player.glyph = '@';
             testLevel.Add(player);
