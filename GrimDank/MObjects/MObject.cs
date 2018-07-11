@@ -32,6 +32,8 @@ namespace GrimDank.MObjects
             Position = position;
             IsWalkable = isWalkable;
             IsTransparent = isTransparent;
+            backgroundColor = Microsoft.Xna.Framework.Color.Black;
+            glyph = '.';
 
             Moved = null;
         }
@@ -50,6 +52,9 @@ namespace GrimDank.MObjects
         // Making this publicly changeable would be kinda tough (though doable) because Map would
         // have to move things around when its set. If we need to we can but otherwise too much work -_-.
         public Map.Layer Layer { get; private set; }
+
+        public char glyph { get; set;  }
+        public Microsoft.Xna.Framework.Color backgroundColor { get; set; }
 
         // This does collision detection and everything, feel free to set. MoveIn function is easier
         // for directions/verification though.

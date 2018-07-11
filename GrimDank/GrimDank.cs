@@ -36,6 +36,7 @@ namespace GrimDank
         private static int testMapWidth = 50;
         private static int testMapHeight = 50;
         private static int fontColums = 16;
+        private Map testLevel;
         
         public GrimDank()
         {
@@ -49,6 +50,8 @@ namespace GrimDank
 
             //check setting cells;
             testing[30].glyph = '@';
+            testLevel = new Map(20, 20);
+            testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false));
         }
 
         /// <summary>
@@ -75,6 +78,7 @@ namespace GrimDank
 
             //load font from the content manager
             font12x12 = Content.Load<Texture2D>("font12x12");
+            MessageLog.Write("Font Loaded");
 
             // TODO: use this.Content to load your game content here
         }
@@ -116,7 +120,12 @@ namespace GrimDank
             for(int i=0; i < testMapHeight*testMapWidth; ++i)
             {
                 spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
-                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
+                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
+                var mob = testLevel.Raycast(Coord.ToCoord(i, testLevel.Width));
+                if(mob != null)
+                {
+                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i% testMapWidth * 12, i / testMapWidth * 12, 12, 12), sourceRectangle: GlyphRect('@'), color: Microsoft.Xna.Framework.Color.White);
+                }
             }
             spriteBatch.End();
 
