@@ -119,12 +119,16 @@ namespace GrimDank
             spriteBatch.Begin();
             for(int i=0; i < testMapHeight*testMapWidth; ++i)
             {
-                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
+                Coord pos = Coord.ToCoord(i, testMapWidth);
+
+                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
+                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: testing[i].foreground);
                 //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
-                var mob = testLevel.Raycast(Coord.ToCoord(i, testLevel.Width));
+                var mob = testLevel.Raycast(pos);
                 if(mob != null)
                 {
-                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i% testMapWidth * 12, i / testMapWidth * 12, 12, 12), sourceRectangle: GlyphRect('@'), color: Microsoft.Xna.Framework.Color.White);
+                    MessageLog.Write(mob.Position.ToString());
+                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('@'), color: Color.White);
                 }
             }
             spriteBatch.End();
@@ -134,9 +138,8 @@ namespace GrimDank
 
         private rectangle GlyphRect(char Character)
         {
-            int cx = (Character) % fontColums;
-            int cy = (Character) / fontColums;
-            return new rectangle(cx*12, cy*12, 12, 12);
+            Coord pos = Coord.ToCoord(Character, fontColums);
+            return new rectangle(pos.X*12, pos.Y*12, 12, 12);
         }
     }
 }
