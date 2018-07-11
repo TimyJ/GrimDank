@@ -32,7 +32,6 @@ namespace GrimDank
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D font12x12;
-        private Cell[] testing;
         private static int testMapWidth = 50;
         private static int testMapHeight = 50;
         private static int fontColums = 16;
@@ -42,16 +41,19 @@ namespace GrimDank
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            testing = new Cell[testMapWidth * testMapHeight];
-            for(int i = 0; i < testing.Length; ++i)
+            testLevel = new Map(20, 20);
+            var player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
+            player.glyph = '@';
+            testLevel.Add(player);
+            for(var x = 0; x < testMapWidth; ++x)
             {
-                testing[i] = new Cell();
+                for (var y = 0; y < testMapHeight; y++)
+                {
+                    testLevel.Add(new MObjects.MObject(Map.Layer.TERRAIN, Coord.Get(x, y), true));
+
+                }
             }
 
-            //check setting cells;
-            testing[30].glyph = '@';
-            testLevel = new Map(20, 20);
-            testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false));
         }
 
         /// <summary>
@@ -121,13 +123,13 @@ namespace GrimDank
             {
                 Coord pos = Coord.ToCoord(i, testMapWidth);
 
-                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
-                spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: testing[i].foreground);
+                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
+                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: testing[i].foreground);
                 //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
                 var mob = testLevel.Raycast(pos);
                 if(mob != null)
                 {
-                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('@'), color: Color.White);
+                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
                 }
             }
             spriteBatch.End();

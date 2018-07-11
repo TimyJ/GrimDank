@@ -19,6 +19,7 @@ namespace GrimDank
         // whether its allowed at run-time, use the bool array below -- its generated based on these values
         private static readonly Dictionary<Layer, bool> _layerMultipleItemsMap = new Dictionary<Layer, bool>
         {
+            { Layer.TERRAIN, false },
             { Layer.ITEMS, true },
             { Layer.CREATURES, false }
         };
@@ -45,7 +46,7 @@ namespace GrimDank
         // You CANNOT assign these enum values to start at any integer other than 0 or things break.
         // Depends on the first item in the enum converting to the integer 0, the second to 1, and so-on.
         public enum Layer
-        { ITEMS, CREATURES }
+        { TERRAIN, ITEMS, CREATURES }
 
         [Conditional("DEBUG")]
         private static void TestAssociations()
