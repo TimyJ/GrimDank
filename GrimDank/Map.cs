@@ -1,5 +1,6 @@
 ﻿using GoRogue;
 using GrimDank.MObjects;
+using GrimDank.Terrains;
 using System;
 using System.Collections.Generic;
 
@@ -10,10 +11,14 @@ namespace GrimDank
         // Layers of MObjects.
         private List<ISpatialMap<MObject>> _layers;
 
+        private Terrain[,] _terrain;
+
         public Map(int width, int height)
         {
             Width = width;
             Height = height;
+
+            _terrain = new Terrain[Width, Height];
 
             _layers = new List<ISpatialMap<MObject>>();
 
@@ -81,7 +86,7 @@ namespace GrimDank
                 return false;
 
             // There is a non-walkable thing
-            if (Raycast(position, obj => !obj.IsWalkable) != null)
+            if (!IsWalkable(position))
                 return true;
 
             return false;
@@ -118,6 +123,41 @@ namespace GrimDank
                         return obj;
 
             return null;
+        }
+
+        // Returns the terrain at a given location, or null if no terrain has been set.
+        public Terrain GetTerrain(Coord position) => _terrain[position.X, position.Y];
+
+        // Sets terrain to the given terrain, overwriting any existing terrain, providing no MObject would collide.
+        public bool SetTerrain(Terrain terrain, Coord position)
+        {
+            if (!terrain.IsWalkable && Raycast(position, m => !m.IsWalkable) != null)
+                return false;
+
+            _terrain[position.X, position.Y] = terrain;
+            return true;
+        }
+
+        public bool IsWalkable(Coord position)
+        {
+            if (_terrain[position.X, position.Y] != null && !_terrain[position.X, position.Y].IsWalkable)
+                return false;
+
+            if (Raycast(position, m => !m.IsWalkable) != null)
+                return false;
+
+            return true;
+        }
+
+        public bool IsTransparent(Coord position)
+        {
+            if (_terrain[position.X, position.Y] != null && !_terrain[position.X, position.Y].IsTransparent)
+                return false;
+
+            if (Raycast(position, m => !m.IsTransparent) != null)
+                return false;
+
+            return true;
         }
 
         // Removes MObject from this map if it is in there, returning success.

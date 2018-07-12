@@ -55,6 +55,8 @@
     <Compile Include="MObjects\MObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Terrains\Terrain.cs" />
+    <Compile Include="Terrains\Terrain_Types.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GoRogue, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
