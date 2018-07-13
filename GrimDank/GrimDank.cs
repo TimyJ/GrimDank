@@ -45,6 +45,7 @@ namespace GrimDank
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = testMapWidth * 12;
             graphics.PreferredBackBufferHeight = testMapHeight * 12;
+            graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -68,7 +69,6 @@ namespace GrimDank
 
             camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 35, 35), new GoRogue.Rectangle(0, 0, 250, 250));
 
-            graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
 
         }
