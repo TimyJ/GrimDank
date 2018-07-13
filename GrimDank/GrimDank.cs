@@ -34,10 +34,11 @@ namespace GrimDank
         private Texture2D font12x12;
         private SpriteFont fpsFont;
         private FrameCounter counter;
-        private static int testMapWidth = 160;
-        private static int testMapHeight = 90;
+        private static int testMapWidth = 250;
+        private static int testMapHeight = 250;
         private static int fontColums = 16;
         private Map testLevel;
+        private BoundedRectangle camera;
         
         public GrimDank()
         {
@@ -55,11 +56,17 @@ namespace GrimDank
             {
                 for (var y = 0; y < testMapHeight; y++)
                 {
-                    testLevel.Add(new MObjects.MObject(Map.Layer.TERRAIN, Coord.Get(x, y), true));
-
+                    testLevel.SetTerrain(Terrains.Terrain.FLOOR, Coord.Get(x, y));
                 }
             }
+
+            for(int i=0; i<5000; ++i)
+            {
+                testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, testLevel.Width)));
+            }
             counter = new FrameCounter();
+
+            camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 35, 35), new GoRogue.Rectangle(0, 0, 250, 250));
 
             graphics.SynchronizeWithVerticalRetrace = false;
             IsFixedTimeStep = false;
@@ -135,8 +142,25 @@ namespace GrimDank
             
             //test drawing
             spriteBatch.Begin();
-            var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
-            spriteBatch.DrawString(fpsFont, frames, new Vector2(1, 1), Color.Black);
+            
+            for(int x=camera.Area.X; x<camera.Area.MaxX; ++x)
+            {
+                for(int y=camera.Area.Y; y<camera.Area.MaxY; ++y)
+                {
+                    spriteBatch.Draw(font12x12, new rectangle(x * 12, y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: Color.Black);
+                    spriteBatch.Draw(font12x12, new rectangle(x * 12, y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: Color.White);
+                }
+            }
+            foreach (var mob in testLevel.MObjects)
+            {
+                if (camera.Area.Contains(mob.Position))
+                {
+                    spriteBatch.Draw(font12x12, new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: Color.Black);
+                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
+                }
+            }
+
+            /*
             for(int i=0; i < testMapHeight*testMapWidth; ++i)
             {
                 Coord pos = Coord.ToCoord(i, testMapWidth);
@@ -149,7 +173,10 @@ namespace GrimDank
                 {
                     spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
                 }
-            }
+            }*/
+            var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
+            spriteBatch.DrawString(fpsFont, frames, new Vector2(550, 1), Color.Black);
+
             spriteBatch.End();
 
             base.Draw(gameTime);

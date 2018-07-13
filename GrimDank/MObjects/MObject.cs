@@ -32,8 +32,8 @@ namespace GrimDank.MObjects
             Position = position;
             IsWalkable = isWalkable;
             IsTransparent = isTransparent;
-            backgroundColor = Microsoft.Xna.Framework.Color.Black;
-            glyph = '.';
+            backgroundColor = Microsoft.Xna.Framework.Color.White;
+            glyph = 'x';
 
             Moved = null;
         }
