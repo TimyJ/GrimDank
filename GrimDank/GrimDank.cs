@@ -42,12 +42,12 @@ namespace GrimDank
 
             Content.RootDirectory = "Content";
             TestLevel = new Map(testMapWidth, testMapHeight);
+            TestLevel.GenerateMap();
 
             Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);
             Player = new MObjects.Creature(playerSpawnPos, 100, 10, "1d8", 0);
             Player.glyph = '@';
             TestLevel.Add(Player);
-            TestLevel.GenerateMap();
             
             for(int i=0; i<NUM_MOBJECTS; ++i)
             {

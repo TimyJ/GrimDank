@@ -21,7 +21,7 @@ namespace GrimDank
         {
             CurrentFont = font;
             CurrentMap = map;
-            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 1280/12, 768/12), new GoRogue.Rectangle(0, 0, CurrentMap.Width-1, CurrentMap.Height-1));
+            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 1280/12, 768/12), new GoRogue.Rectangle(0, 0, CurrentMap.Width, CurrentMap.Height));
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -30,9 +30,9 @@ namespace GrimDank
             //DrawWithIteration(spriteBatch);
         }
 
-        public void UpdateCameraSize(int width, int height)
+        public void UpdateCameraSize(int deltaWidth, int deltaHeight)
         {
-            Camera.Area = Camera.Area.NewWithMaxCorner(Coord.Get(width + Camera.Area.MaxX, height + Camera.Area.MaxY));
+            Camera.Area = Camera.Area.ChangeSize(deltaWidth, deltaHeight);
         }
 
         private void DrawWithRaycasting(SpriteBatch spriteBatch)

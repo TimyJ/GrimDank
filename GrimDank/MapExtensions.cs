@@ -19,6 +19,7 @@ namespace GrimDank
         {
             ArrayMap<bool> genMap = new ArrayMap<bool>(Width, Height);
             GoRogue.MapGeneration.Generators.CellularAutomataGenerator.Generate(genMap);
+
             foreach(var pos in genMap.Positions())
             {
                 if (genMap[pos])
@@ -95,7 +96,7 @@ namespace GrimDank
                     GrimDank.TestLevel.SetExplored(true, pos);
                 }
                 // Ditto above -- hook player move event prolly preferable.
-                GrimDank.MapRenderer.Camera.Area = GrimDank.MapRenderer.Camera.Area.NewWithCenter(GrimDank.Player.Position);
+                GrimDank.MapRenderer.Camera.Area = GrimDank.MapRenderer.Camera.Area.CenterOn(GrimDank.Player.Position);
             }
 
             if (handledSomething)
