@@ -28,29 +28,34 @@ namespace GrimDank
 
     public class GrimDank : Game
     {
+
+        static readonly int NUM_MOBJECTS = 200;
         
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D font12x12;
+        private Texture2D hudTest;
         private SpriteFont fpsFont;
         private FrameCounter counter;
         private static int testMapWidth = 250;
         private static int testMapHeight = 250;
-        private static int fontColums = 16;
         private Map testLevel;
-        private BoundedRectangle camera;
+        private MObjects.MObject player;
+        private MapRenderer mapRenderer;
+        private float InputDelay;
+        private float TimeSinceLastInput;
         
         public GrimDank()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = testMapWidth * 12;
-            graphics.PreferredBackBufferHeight = testMapHeight * 12;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
             graphics.SynchronizeWithVerticalRetrace = false;
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
             testLevel = new Map(testMapWidth, testMapHeight);
-            var player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
+            player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
             player.glyph = '@';
             testLevel.Add(player);
             for(var x = 0; x < testMapWidth; ++x)
@@ -58,16 +63,22 @@ namespace GrimDank
                 for (var y = 0; y < testMapHeight; y++)
                 {
                     testLevel.SetTerrain(Terrains.Terrain.FLOOR, Coord.Get(x, y));
+                    testLevel.SetExplored(false, Coord.Get(x, y));
+                    //testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(x,y)));
                 }
             }
-
-            for(int i=0; i<5000; ++i)
+            
+            for(int i=0; i<NUM_MOBJECTS; ++i)
             {
                 testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, testLevel.Width)));
             }
-            counter = new FrameCounter();
+            testLevel.SetupFOV(player.Position);
 
-            camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 35, 35), new GoRogue.Rectangle(0, 0, 250, 250));
+            counter = new FrameCounter();
+            InputDelay = 0.1f;
+
+
+            mapRenderer = new MapRenderer(font12x12, testLevel);
 
             IsFixedTimeStep = false;
 
@@ -97,9 +108,12 @@ namespace GrimDank
 
             //load font from the content manager
             font12x12 = Content.Load<Texture2D>("font12x12");
+            mapRenderer.CurrentFont = font12x12;
             MessageLog.Write("Font Loaded");
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
+
+            hudTest = Content.Load<Texture2D>("TESTHUD");
 
             // TODO: use this.Content to load your game content here
         }
@@ -120,11 +134,34 @@ namespace GrimDank
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
+            if (TimeSinceLastInput >= InputDelay) {
+                int dx = 0;
+                int dy = 0;
+                foreach (int key in Keyboard.GetState().GetPressedKeys())
+                    
+                {
+                    switch (key)
+                    {
+                        case (int)Keys.NumPad6: { dx = 1; TimeSinceLastInput = 0; break; }
+                        case (int)Keys.NumPad4: { dx = -1; TimeSinceLastInput = 0; break; }
+                        case (int)Keys.NumPad8: { dy = -1; TimeSinceLastInput = 0; break; }
+                        case (int)Keys.NumPad2: { dy = 1; TimeSinceLastInput = 0; break; }
+                    }
+                }
+                if (dx != 0 || dy != 0)
+                {
+                    player.MoveIn(Direction.GetDirection(dx, dy));
+                    testLevel.fov.Calculate(player.Position, 23);
+                    foreach(var pos in testLevel.fov.NewlySeen)
+                    {
+                        testLevel.SetExplored(true, pos);
+                    }
+                    mapRenderer.Camera.Area = mapRenderer.Camera.Area.NewWithCenter(player.Position);
+                }
+            } else { TimeSinceLastInput += deltaTime; }
 
             base.Update(gameTime);
         }
@@ -135,57 +172,28 @@ namespace GrimDank
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
+            
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             counter.Update(deltaTime);
             
             //test drawing
+            
             spriteBatch.Begin();
             
-            for(int x=camera.Area.X; x<camera.Area.MaxX; ++x)
-            {
-                for(int y=camera.Area.Y; y<camera.Area.MaxY; ++y)
-                {
-                    spriteBatch.Draw(font12x12, new rectangle(x * 12, y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: Color.Black);
-                    spriteBatch.Draw(font12x12, new rectangle(x * 12, y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: Color.White);
-                }
-            }
-            foreach (var mob in testLevel.MObjects)
-            {
-                if (camera.Area.Contains(mob.Position))
-                {
-                    spriteBatch.Draw(font12x12, new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: Color.Black);
-                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
-                }
-            }
-
-            /*
-            for(int i=0; i < testMapHeight*testMapWidth; ++i)
-            {
-                Coord pos = Coord.ToCoord(i, testMapWidth);
-
-                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: testing[i].background);
-                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect('.'), color: testing[i].foreground);
-                //spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(i%testMapWidth*12, i/testMapWidth*12, 12, 12), sourceRectangle: GlyphRect(testing[i].glyph), color: testing[i].foreground);
-                var mob = testLevel.Raycast(pos);
-                if(mob != null)
-                {
-                    spriteBatch.Draw(font12x12, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
-                }
-            }*/
+            mapRenderer.Draw(spriteBatch);
+            spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
+            
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
-            spriteBatch.DrawString(fpsFont, frames, new Vector2(550, 1), Color.Black);
+            spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
+            
 
-            spriteBatch.End();
-
+           spriteBatch.End();
+            
             base.Draw(gameTime);
         }
 
-        private rectangle GlyphRect(char Character)
-        {
-            Coord pos = Coord.ToCoord(Character, fontColums);
-            return new rectangle(pos.X*12, pos.Y*12, 12, 12);
-        }
+        
     }
 }

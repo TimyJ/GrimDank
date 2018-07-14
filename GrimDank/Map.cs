@@ -3,6 +3,7 @@ using GrimDank.MObjects;
 using GrimDank.Terrains;
 using System;
 using System.Collections.Generic;
+using GoRogue.MapViews;
 
 namespace GrimDank
 {
@@ -12,6 +13,9 @@ namespace GrimDank
         private List<ISpatialMap<MObject>> _layers;
 
         private Terrain[,] _terrain;
+        private bool[,] _explored;
+        public FOV fov;
+        public ArrayMap<double> resistanceMap;
 
         public Map(int width, int height)
         {
@@ -20,7 +24,11 @@ namespace GrimDank
 
             _terrain = new Terrain[Width, Height];
 
+            _explored = new bool[Width, Height];
+
             _layers = new List<ISpatialMap<MObject>>();
+            resistanceMap = new ArrayMap<double>(Width, Height);
+            
 
             for (int i = 0; i < _layerSize; i++)
             {
@@ -28,6 +36,28 @@ namespace GrimDank
                     _layers.Add(new MultiSpatialMap<MObject>());
                 else
                     _layers.Add(new SpatialMap<MObject>());
+            }
+        }
+
+        public void SetupFOV(Coord playerPos)
+        {
+            for (int x = 0; x < Width; ++x)
+            {
+                for (int y = 0; y < Height; ++y)
+                {
+                    if (GetTerrain(Coord.Get(x, y)).IsTransparent)
+                    {
+                        resistanceMap[x, y] = 0;
+                    }
+                    else { resistanceMap[x, y] = 1; }
+                }
+            }
+
+            fov = new FOV(resistanceMap);
+            fov.Calculate(playerPos, 23);
+            foreach (var pos in fov.CurrentFOV)
+            {
+                SetExplored(true, pos);
             }
         }
 
@@ -128,6 +158,9 @@ namespace GrimDank
         // Returns the terrain at a given location, or null if no terrain has been set.
         public Terrain GetTerrain(Coord position) => _terrain[position.X, position.Y];
 
+        //returns the explored status at a given location
+        public bool GetExplored(Coord position) => _explored[position.X, position.Y];
+
         // Sets terrain to the given terrain, overwriting any existing terrain, providing no MObject would collide.
         public bool SetTerrain(Terrain terrain, Coord position)
         {
@@ -136,6 +169,11 @@ namespace GrimDank
 
             _terrain[position.X, position.Y] = terrain;
             return true;
+        }
+
+        public void SetExplored(bool status, Coord position)
+        {
+            _explored[position.X, position.Y] = status;
         }
 
         public bool IsWalkable(Coord position)
