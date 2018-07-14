@@ -13,6 +13,16 @@ namespace GrimDank
     /// 
     class GrimDank : Game
     {
+        // Read-only for now just to save writing property code.  But obviously changeable later.
+        // Mostly these are here to get the magic constants under control for when we want to start changing
+        // things.
+        public static readonly int WINDOW_WIDTH = 1280;
+        public static readonly int WINDOW_HEIGHT = 720;
+
+        // Ditto above -- I assume this font, prolly go to map renderer later or something, but gets the magic constants
+        // under control.
+        public static readonly int FONT_SIZE = 12;
+
 
         static readonly int NUM_MOBJECTS = 200;
         
@@ -34,10 +44,12 @@ namespace GrimDank
         // a break!
         public GrimDank()
         {
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
-            graphics.SynchronizeWithVerticalRetrace = false;
+            graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = WINDOW_WIDTH,
+                PreferredBackBufferHeight = WINDOW_HEIGHT,
+                SynchronizeWithVerticalRetrace = false
+            };
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
@@ -140,8 +152,9 @@ namespace GrimDank
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
             float playerHPPercentage = (float)Player.CurrentHP / (float)Player.MaxHP;
             MessageLog.Write(playerHPPercentage.ToString());
-            float drawPosition = 720 - 720 * playerHPPercentage;
+            float drawPosition = WINDOW_HEIGHT - WINDOW_HEIGHT * playerHPPercentage;
             //MessageLog.Write(drawPosition.ToString());
+            // TODO: Not sure what these magic constants really are so imma leave them.
             spriteBatch.Draw(hudTest, new rectangle(0, 0, 110, 720), new rectangle(175, 0, 175, 1080), Color.White);
             spriteBatch.Draw(hudTest, new rectangle(0, (int)(drawPosition), 100, 720), new rectangle(0, (int)(1080 - 1080*playerHPPercentage), 175, 1080), Color.White);
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);

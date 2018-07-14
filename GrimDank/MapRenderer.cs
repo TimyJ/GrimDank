@@ -7,21 +7,23 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using rectangle = Microsoft.Xna.Framework.Rectangle;
 using GoRogue;
+using GoRogue.MapViews;
 
 namespace GrimDank
 {
     class MapRenderer
     {
         public Texture2D CurrentFont;
-        public Map CurrentMap;
-        public BoundedRectangle Camera;
-        private static int fontColums = 16;
+        public Map CurrentMap { get; private set; }
+        public BoundedRectangle Camera { get; private set; }
+        private static readonly int FONT_COLUMNS = 16;
 
         public MapRenderer(Texture2D font, Map map)
         {
             CurrentFont = font;
             CurrentMap = map;
-            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 1280/12, 768/12), new GoRogue.Rectangle(0, 0, CurrentMap.Width, CurrentMap.Height));
+            Coord screenCells = Coord.Get(GrimDank.WINDOW_WIDTH / GrimDank.FONT_SIZE, GrimDank.WINDOW_HEIGHT / GrimDank.FONT_SIZE);
+            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, screenCells.X, screenCells.Y), CurrentMap.WalkabilityMap.Bounds());
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -29,6 +31,10 @@ namespace GrimDank
             DrawWithRaycasting(spriteBatch);
             //DrawWithIteration(spriteBatch);
         }
+
+        public static Coord WorldToPixel(Coord worldCoords) => worldCoords * GrimDank.FONT_SIZE;
+
+        public static Coord PixelToWorld(Coord pixelCoords) => pixelCoords / 12;
 
         public void UpdateCameraSize(int deltaWidth, int deltaHeight)
         {
@@ -39,51 +45,70 @@ namespace GrimDank
         {
             int offsetX = Camera.Area.X*12;
             int offsetY = Camera.Area.Y*12;
-            foreach (var pos in Camera.Area.Positions())
+            foreach (var worldPos in Camera.Area.Positions())
             {
-                if (CurrentMap.fov[pos.X, pos.Y] != 0)
-                {
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12 -offsetX, pos.Y * 12-offsetY, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: CurrentMap.GetTerrain(pos).BackgroundColor);
+                Coord screenPos = WorldToPixel(worldPos - Camera.Area.Position);
 
-                    var mob = CurrentMap.Raycast(pos);
+                if (CurrentMap.fov[worldPos.X, worldPos.Y] != 0)
+                {
+                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                                     color: CurrentMap.GetTerrain(worldPos).BackgroundColor);
+
+                    var mob = CurrentMap.Raycast(worldPos);
                     if (mob != null)
                     {
-                        spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12-offsetX, pos.Y * 12-offsetY, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
+                        spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(mob.glyph),
+                                         color: Color.White);
                     }
                     else
                     {
-                        spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12-offsetX, pos.Y * 12-offsetY, 12, 12), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(pos).Glyph), color: Color.White);
+                        spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                                         color: Color.White);
                     }
                 }
-                else if (CurrentMap.GetExplored(pos))
+                else if (CurrentMap.GetExplored(worldPos))
                 {
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12-offsetX, pos.Y * 12-offsetY, 12, 12), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(pos).Glyph), color: Color.Gray);
+                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                                     color: Color.Gray);
                 }
             }
         }
 
+        [Obsolete] // This code is NOT kept up to date; if needed it could be brought up to speed
         private void DrawWithIteration(SpriteBatch spriteBatch)
         {
-            foreach (var pos in Camera.Area.Positions())
+            foreach (var worldPos in Camera.Area.Positions())
             {
-                spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: CurrentMap.GetTerrain(pos).BackgroundColor);
-                spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(pos.X * 12, pos.Y * 12, 12, 12), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(pos).Glyph), color: Color.White);
+                Coord screenPos = WorldToPixel(worldPos - Camera.Area.Position);
+
+                spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                                 color: CurrentMap.GetTerrain(worldPos).BackgroundColor);
+                spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                                 color: Color.White);
             }
 
             foreach (var mob in CurrentMap.MObjects)
             {
                 if (Camera.Area.Contains(mob.Position)) {
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: new rectangle(0, 0, 12, 12), color: CurrentMap.GetTerrain(mob.Position).BackgroundColor);
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: new rectangle(mob.Position.X * 12, mob.Position.Y * 12, 12, 12), sourceRectangle: GlyphRect(mob.glyph), color: Color.White);
+                    Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
+
+                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                                     color: CurrentMap.GetTerrain(mob.Position).BackgroundColor);
+                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(mob.glyph),
+                                     color: Color.White);
                 }
             } 
                 
         }
 
-        private rectangle GlyphRect(char Character)
+        // Gets rectangle from texture representing given character.
+        private static rectangle GlyphRect(char character)
         {
-            Coord pos = Coord.ToCoord(Character, fontColums);
-            return new rectangle(pos.X * 12, pos.Y * 12, 12, 12);
+            Coord pos = Coord.ToCoord(character, FONT_COLUMNS);
+            return new rectangle(pos.X * GrimDank.FONT_SIZE, pos.Y * GrimDank.FONT_SIZE, GrimDank.FONT_SIZE, GrimDank.FONT_SIZE);
         }
+
+        // Gets the rectangle representing the cell area for the cell located at the given screen coords.
+        private static rectangle CellRect(Coord screenPos) => new rectangle(screenPos.X, screenPos.Y, GrimDank.FONT_SIZE, GrimDank.FONT_SIZE);
     }
 }

@@ -32,7 +32,7 @@ namespace GrimDank
         public void SetupFOV(Coord playerPos)
         {
             fov = new FOV(ResistanceMap);
-            fov.Calculate(playerPos, 23);
+            fov.Calculate(playerPos, 23); // TODO: Just flagging magic constant (FOV Radius)
             foreach (var pos in fov.CurrentFOV)
             {
                 SetExplored(true, pos);
