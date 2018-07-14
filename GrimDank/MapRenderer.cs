@@ -16,7 +16,7 @@ namespace GrimDank
         public Texture2D CurrentFont;
         public Map CurrentMap;
         public BoundedRectangle Camera { get; private set; }
-        private static readonly int FONT_COLUMNS = 16;
+        private static readonly int FONT_COLUMNS = 16; // Ditto comments on font stuff from GrimDank.cs.  Eventually could go in a Font class
 
         public MapRenderer(Texture2D font, Map map)
         {
