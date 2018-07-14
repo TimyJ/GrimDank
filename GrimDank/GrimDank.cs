@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using rectangle = Microsoft.Xna.Framework.Rectangle;
-
+using GoRogue.MapViews;
 using GoRogue;
 
 namespace GrimDank
@@ -41,7 +41,9 @@ namespace GrimDank
 
             Content.RootDirectory = "Content";
             testLevel = new Map(testMapWidth, testMapHeight);
-            Player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
+
+            Coord playerSpawnPos = testLevel.WalkabilityMap.RandomPosition(true);
+            Player = new MObjects.MObject(Map.Layer.CREATURES, playerSpawnPos, false, false);
             Player.glyph = '@';
             testLevel.Add(Player);
             testLevel.GenerateMap();
