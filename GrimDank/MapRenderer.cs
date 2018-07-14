@@ -21,7 +21,7 @@ namespace GrimDank
         {
             CurrentFont = font;
             CurrentMap = map;
-            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 1280/12, 768/12), new GoRogue.Rectangle(0, 0, CurrentMap.Width, CurrentMap.Height));
+            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, 1280/12, 768/12), new GoRogue.Rectangle(0, 0, CurrentMap.Width-1, CurrentMap.Height-1));
         }
 
         public void Draw(SpriteBatch spriteBatch)

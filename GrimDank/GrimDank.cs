@@ -12,20 +12,6 @@ namespace GrimDank
     /// </summary>
     /// 
 
-    public class Cell
-    {
-        public Color foreground;
-        public Color background;
-        public char glyph;
-
-        public Cell()
-        {
-            foreground = Color.White;
-            background = Color.Black;
-            glyph = '.';
-        }
-    }
-
     public class GrimDank : Game
     {
 
@@ -58,15 +44,8 @@ namespace GrimDank
             player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
             player.glyph = '@';
             testLevel.Add(player);
-            for(var x = 0; x < testMapWidth; ++x)
-            {
-                for (var y = 0; y < testMapHeight; y++)
-                {
-                    testLevel.SetTerrain(Terrains.Terrain.FLOOR, Coord.Get(x, y));
-                    testLevel.SetExplored(false, Coord.Get(x, y));
-                    //testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(x,y)));
-                }
-            }
+            testLevel.player = player;
+            testLevel.GenerateMap();
             
             for(int i=0; i<NUM_MOBJECTS; ++i)
             {
@@ -183,13 +162,13 @@ namespace GrimDank
             spriteBatch.Begin();
             
             mapRenderer.Draw(spriteBatch);
-            spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
+            //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
             
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
             spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
             
 
-           spriteBatch.End();
+            spriteBatch.End();
             
             base.Draw(gameTime);
         }
