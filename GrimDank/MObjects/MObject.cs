@@ -4,7 +4,7 @@ using System;
 namespace GrimDank.MObjects
 {
     // Arguments for Moved events.
-    public class MovedArgs : EventArgs
+    class MovedArgs : EventArgs
     {
         public MovedArgs(Coord oldPosition, Coord newPosition)
         {
@@ -16,7 +16,7 @@ namespace GrimDank.MObjects
         public Coord OldPosition { get; private set; }
     }
 
-    internal class MObject : IHasID
+    class MObject : IHasID
     {
         // This will pretty much be unsat later as far as serialization goes but easy enough to sort
         // out then

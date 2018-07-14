@@ -12,7 +12,7 @@ namespace GrimDank
     /// </summary>
     /// 
 
-    public class GrimDank : Game
+    class GrimDank : Game
     {
 
         static readonly int NUM_MOBJECTS = 200;
@@ -26,7 +26,7 @@ namespace GrimDank
         private static int testMapWidth = 250;
         private static int testMapHeight = 250;
         private Map testLevel;
-        private MObjects.MObject player;
+        public MObjects.MObject Player { get; private set; }
         private MapRenderer mapRenderer;
         private float InputDelay;
         private float TimeSinceLastInput;
@@ -41,17 +41,16 @@ namespace GrimDank
 
             Content.RootDirectory = "Content";
             testLevel = new Map(testMapWidth, testMapHeight);
-            player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
-            player.glyph = '@';
-            testLevel.Add(player);
-            testLevel.player = player;
+            Player = new MObjects.MObject(Map.Layer.CREATURES, Coord.Get(10, 10), false, false);
+            Player.glyph = '@';
+            testLevel.Add(Player);
             testLevel.GenerateMap();
             
             for(int i=0; i<NUM_MOBJECTS; ++i)
             {
                 testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, testLevel.Width)));
             }
-            testLevel.SetupFOV(player.Position);
+            testLevel.SetupFOV(Player.Position);
 
             counter = new FrameCounter();
             InputDelay = 0.1f;
@@ -132,13 +131,13 @@ namespace GrimDank
                 }
                 if (dx != 0 || dy != 0)
                 {
-                    player.MoveIn(Direction.GetDirection(dx, dy));
-                    testLevel.fov.Calculate(player.Position, 23);
+                    Player.MoveIn(Direction.GetDirection(dx, dy));
+                    testLevel.fov.Calculate(Player.Position, 23);
                     foreach(var pos in testLevel.fov.NewlySeen)
                     {
                         testLevel.SetExplored(true, pos);
                     }
-                    mapRenderer.Camera.Area = mapRenderer.Camera.Area.NewWithCenter(player.Position);
+                    mapRenderer.Camera.Area = mapRenderer.Camera.Area.NewWithCenter(Player.Position);
                 }
             } else { TimeSinceLastInput += deltaTime; }
 

@@ -50,7 +50,7 @@
     <Compile Include="FramerateCounter.cs" />
     <Compile Include="GrimDank.cs" />
     <Compile Include="Map.cs" />
-    <Compile Include="MapExtentions.cs" />
+    <Compile Include="MapExtensions.cs" />
     <Compile Include="MapRenderer.cs" />
     <Compile Include="Map_Layers.cs" />
     <Compile Include="MessageLog.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="ResistanceProvider.cs" />
     <Compile Include="Terrains\Terrain.cs" />
     <Compile Include="Terrains\Terrain_Types.cs" />
+    <Compile Include="WalkabilityProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GoRogue, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

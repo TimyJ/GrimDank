@@ -10,8 +10,8 @@ namespace GrimDank
         private Terrain[,] _terrain;
         private bool[,] _explored;
         public FOV fov;
-        private ResistanceProvider resistanceMap;
-        public MObjects.MObject player;
+        public ResistanceProvider ResistanceMap { get; private set; }
+        public WalkabilityProvider WalkabilityMap { get; private set; }
 
         public void GenerateMap()
         {
@@ -28,7 +28,7 @@ namespace GrimDank
 
         public void SetupFOV(Coord playerPos)
         {
-            fov = new FOV(resistanceMap);
+            fov = new FOV(ResistanceMap);
             fov.Calculate(playerPos, 23);
             foreach (var pos in fov.CurrentFOV)
             {

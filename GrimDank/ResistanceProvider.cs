@@ -5,15 +5,16 @@ namespace GrimDank
 {
     class ResistanceProvider : IMapView<double>
     {
-        private Map map;
-        public ResistanceProvider(Map mapToUse) { map = mapToUse; }
+        public Map Map { get; private set; }
 
-        public double this[Coord pos] { get { return map.IsTransparent(pos) ?  0 : 1; } }
+        public ResistanceProvider(Map mapToUse) { Map = mapToUse; }
 
-        public double this[int x, int y] { get { return map.IsTransparent(Coord.Get(x, y)) ? 0 : 1; } }
+        public double this[Coord pos] { get { return Map.IsTransparent(pos) ?  0 : 1; } }
 
-        int IMapView<double>.Height => map.Height;
+        public double this[int x, int y] { get { return Map.IsTransparent(Coord.Get(x, y)) ? 0 : 1; } }
 
-        int IMapView<double>.Width => map.Width;
+        int IMapView<double>.Height => Map.Height;
+
+        int IMapView<double>.Width => Map.Width;
     }
 }

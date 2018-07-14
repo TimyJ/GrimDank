@@ -24,7 +24,8 @@ namespace GrimDank
             _explored = new bool[Width, Height];
 
             _layers = new List<ISpatialMap<MObject>>();
-            resistanceMap = new ResistanceProvider(this);
+            ResistanceMap = new ResistanceProvider(this);
+            WalkabilityMap = new WalkabilityProvider(this);
             
 
             for (int i = 0; i < _layerSize; i++)
