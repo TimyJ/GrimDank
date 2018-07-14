@@ -25,11 +25,9 @@ namespace GrimDank
         private FrameCounter counter;
         private static int testMapWidth = 250;
         private static int testMapHeight = 250;
-        private Map testLevel;
-        public MObjects.MObject Player { get; private set; }
-        private MapRenderer mapRenderer;
-        private float InputDelay;
-        private float TimeSinceLastInput;
+        public static Map TestLevel { get; private set; }
+        public static MObjects.MObject Player { get; private set; }
+        public static MapRenderer MapRenderer { get; private set; }
         
         // GrimDank class is the master class and as such this comment supersedes... We're testing git give me
         // a break!
@@ -42,25 +40,23 @@ namespace GrimDank
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
-            testLevel = new Map(testMapWidth, testMapHeight);
+            TestLevel = new Map(testMapWidth, testMapHeight);
 
-            Coord playerSpawnPos = testLevel.WalkabilityMap.RandomPosition(true);
+            Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);
             Player = new MObjects.MObject(Map.Layer.CREATURES, playerSpawnPos, false, false);
             Player.glyph = '@';
-            testLevel.Add(Player);
-            testLevel.GenerateMap();
+            TestLevel.Add(Player);
+            TestLevel.GenerateMap();
             
             for(int i=0; i<NUM_MOBJECTS; ++i)
             {
-                testLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, testLevel.Width)));
+                TestLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, TestLevel.Width)));
             }
-            testLevel.SetupFOV(Player.Position);
+            TestLevel.SetupFOV(Player.Position);
 
             counter = new FrameCounter();
-            InputDelay = 0.1f;
 
-
-            mapRenderer = new MapRenderer(font12x12, testLevel);
+            MapRenderer = new MapRenderer(font12x12, TestLevel);
 
             IsFixedTimeStep = false;
 
@@ -90,7 +86,7 @@ namespace GrimDank
 
             //load font from the content manager
             font12x12 = Content.Load<Texture2D>("font12x12");
-            mapRenderer.CurrentFont = font12x12;
+            MapRenderer.CurrentFont = font12x12;
             MessageLog.Write("Font Loaded");
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
@@ -116,34 +112,7 @@ namespace GrimDank
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-            if (TimeSinceLastInput >= InputDelay) {
-                int dx = 0;
-                int dy = 0;
-                foreach (int key in Keyboard.GetState().GetPressedKeys())
-                    
-                {
-                    switch (key)
-                    {
-                        case (int)Keys.NumPad6: { dx = 1; TimeSinceLastInput = 0; break; }
-                        case (int)Keys.NumPad4: { dx = -1; TimeSinceLastInput = 0; break; }
-                        case (int)Keys.NumPad8: { dy = -1; TimeSinceLastInput = 0; break; }
-                        case (int)Keys.NumPad2: { dy = 1; TimeSinceLastInput = 0; break; }
-                    }
-                }
-                if (dx != 0 || dy != 0)
-                {
-                    Player.MoveIn(Direction.GetDirection(dx, dy));
-                    testLevel.fov.Calculate(Player.Position, 23);
-                    foreach(var pos in testLevel.fov.NewlySeen)
-                    {
-                        testLevel.SetExplored(true, pos);
-                    }
-                    mapRenderer.Camera.Area = mapRenderer.Camera.Area.NewWithCenter(Player.Position);
-                }
-            } else { TimeSinceLastInput += deltaTime; }
+            InputStack.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -164,7 +133,7 @@ namespace GrimDank
             
             spriteBatch.Begin();
             
-            mapRenderer.Draw(spriteBatch);
+            MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
             
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);

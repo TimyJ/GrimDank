@@ -2,10 +2,12 @@
 using GoRogue;
 using GrimDank.Terrains;
 using GoRogue.MapGeneration;
+using Microsoft.Xna.Framework.Input;
+
 //Fuck you chris for making me finally learn how to use git properly
 namespace GrimDank
 {
-    partial class Map
+    partial class Map : IInputHandler
     {
         private Terrain[,] _terrain;
         private bool[,] _explored;
@@ -47,6 +49,58 @@ namespace GrimDank
 
             _terrain[position.X, position.Y] = terrain;
             return true;
+        }
+
+        public bool HandleKeyboard(KeyboardState state)
+        {
+            bool handledSomething = true;
+
+            Direction dirToMove = Direction.NONE;
+
+            foreach (int key in state.GetPressedKeys())
+            {
+                switch (key)
+                {
+                    case (int)Keys.NumPad6:
+                        dirToMove = Direction.RIGHT;
+                        break;
+                    case (int)Keys.NumPad4:
+                        dirToMove = Direction.LEFT;
+                        break;
+                    case (int)Keys.NumPad8:
+                        dirToMove = Direction.UP;
+                        break;
+                    case (int)Keys.NumPad2:
+                        dirToMove = Direction.DOWN;
+                        break;
+                    default:
+                        handledSomething = false;
+                        break;
+                }
+
+                if (handledSomething)
+                    break;
+            }
+
+            if (dirToMove != Direction.NONE)
+            {
+                GrimDank.Player.MoveIn(dirToMove);
+                // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
+                // it can simply call calculate for Player's current map.
+                GrimDank.TestLevel.fov.Calculate(GrimDank.Player.Position, 23);
+
+                foreach (var pos in GrimDank.TestLevel.fov.NewlySeen)
+                {
+                    GrimDank.TestLevel.SetExplored(true, pos);
+                }
+                // Ditto above -- hook player move event prolly preferable.
+                GrimDank.MapRenderer.Camera.Area = GrimDank.MapRenderer.Camera.Area.NewWithCenter(GrimDank.Player.Position);
+            }
+
+            if (handledSomething)
+                return true;
+
+            return false;
         }
     }
 }
