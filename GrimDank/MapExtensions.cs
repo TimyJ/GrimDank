@@ -54,12 +54,13 @@ namespace GrimDank
 
         public bool HandleKeyboard(KeyboardState state)
         {
-            bool handledSomething = true;
+            bool handledSomething = false;
 
             Direction dirToMove = Direction.NONE;
 
             foreach (int key in state.GetPressedKeys())
             {
+                handledSomething = true;
                 switch (key)
                 {
                     case (int)Keys.NumPad6:
