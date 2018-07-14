@@ -57,6 +57,7 @@
     <Compile Include="MapRenderer.cs" />
     <Compile Include="Map_Layers.cs" />
     <Compile Include="MessageLog.cs" />
+    <Compile Include="MObjects\Creature.cs" />
     <Compile Include="MObjects\MObject.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

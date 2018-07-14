@@ -94,7 +94,7 @@ namespace GrimDank
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
 
-            hudTest = Content.Load<Texture2D>("TESTHUD");
+            hudTest = Content.Load<Texture2D>("LIFEBAR1");
 
             // TODO: use this.Content to load your game content here
         }
@@ -138,7 +138,9 @@ namespace GrimDank
             
             MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
-            
+            spriteBatch.Draw(hudTest, new rectangle(0, 0, 110, 720), new rectangle(175, 0, 175, 1080), Color.White);
+            spriteBatch.Draw(hudTest, new rectangle(0, 0, 100, 720), new rectangle(0, 0, 175, 1080), Color.White);
+
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
             spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
             
