@@ -2,7 +2,7 @@
 using GoRogue;
 using GrimDank.Terrains;
 using GoRogue.MapGeneration;
-//Fuck you chris for making me finally learn how to use git
+//Fuck you chris for making me finally learn how to use git properly
 namespace GrimDank
 {
     partial class Map
