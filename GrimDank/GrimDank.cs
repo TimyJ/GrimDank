@@ -25,7 +25,7 @@ namespace GrimDank
         private static int testMapWidth = 250;
         private static int testMapHeight = 250;
         public static Map TestLevel { get; private set; }
-        public static MObjects.MObject Player { get; private set; }
+        public static MObjects.Creature Player { get; private set; }
         public static MapRenderer MapRenderer { get; private set; }
 
         private static GlobalKeyHandler _globalKeyHandler;
@@ -44,7 +44,7 @@ namespace GrimDank
             TestLevel = new Map(testMapWidth, testMapHeight);
 
             Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);
-            Player = new MObjects.MObject(Map.Layer.CREATURES, playerSpawnPos, false, false);
+            Player = new MObjects.Creature(playerSpawnPos, 100, 10, "1d8", 0);
             Player.glyph = '@';
             TestLevel.Add(Player);
             TestLevel.GenerateMap();
@@ -138,9 +138,12 @@ namespace GrimDank
             
             MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
+            float playerHPPercentage = (float)Player.CurrentHP / (float)Player.MaxHP;
+            MessageLog.Write(playerHPPercentage.ToString());
+            float drawPosition = 720 - 720 * playerHPPercentage;
+            //MessageLog.Write(drawPosition.ToString());
             spriteBatch.Draw(hudTest, new rectangle(0, 0, 110, 720), new rectangle(175, 0, 175, 1080), Color.White);
-            spriteBatch.Draw(hudTest, new rectangle(0, 0, 100, 720), new rectangle(0, 0, 175, 1080), Color.White);
-
+            spriteBatch.Draw(hudTest, new rectangle(0, (int)(drawPosition), 100, 720), new rectangle(0, (int)(1080 - 1080*playerHPPercentage), 175, 1080), Color.White);
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
             spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
             

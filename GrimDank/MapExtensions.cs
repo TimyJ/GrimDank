@@ -84,6 +84,7 @@ namespace GrimDank
 
             if (dirToMove != Direction.NONE)
             {
+                GrimDank.Player.TakeDamage(5);
                 GrimDank.Player.MoveIn(dirToMove);
                 // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
                 // it can simply call calculate for Player's current map.
