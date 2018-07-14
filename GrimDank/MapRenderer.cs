@@ -14,7 +14,7 @@ namespace GrimDank
     class MapRenderer
     {
         public Texture2D CurrentFont;
-        public Map CurrentMap { get; private set; }
+        public Map CurrentMap;
         public BoundedRectangle Camera { get; private set; }
         private static readonly int FONT_COLUMNS = 16;
 

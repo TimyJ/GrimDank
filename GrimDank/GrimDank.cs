@@ -19,8 +19,8 @@ namespace GrimDank
         public static readonly int WINDOW_WIDTH = 1280;
         public static readonly int WINDOW_HEIGHT = 720;
 
-        // Ditto above -- I assume this font, prolly go to map renderer later or something, but gets the magic constants
-        // under control.
+        // Ditto above -- though if we keep using texture-fonts, probably pull it out to a Font class that pairs the texture2D with the size and suck.
+        // Wasn't worried about that at the moment, but this gets the magic constants under control.
         public static readonly int FONT_SIZE = 12;
 
 
@@ -39,9 +39,7 @@ namespace GrimDank
         public static MapRenderer MapRenderer { get; private set; }
 
         private static GlobalKeyHandler _globalKeyHandler;
-        
-        // GrimDank class is the master class and as such this comment supersedes... We're testing git give me
-        // a break!
+       
         public GrimDank()
         {
             graphics = new GraphicsDeviceManager(this)
