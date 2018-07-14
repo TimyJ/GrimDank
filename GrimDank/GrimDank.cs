@@ -31,6 +31,8 @@ namespace GrimDank
         private float InputDelay;
         private float TimeSinceLastInput;
         
+        // GrimDank class is the master class and as such this comment supersedes... We're testing git give me
+        // a break.
         public GrimDank()
         {
             graphics = new GraphicsDeviceManager(this);
