@@ -11,7 +11,6 @@ namespace GrimDank
     /// This is the main type for your game.
     /// </summary>
     /// 
-
     class GrimDank : Game
     {
 
@@ -28,6 +27,8 @@ namespace GrimDank
         public static Map TestLevel { get; private set; }
         public static MObjects.MObject Player { get; private set; }
         public static MapRenderer MapRenderer { get; private set; }
+
+        private static GlobalKeyHandler _globalKeyHandler;
         
         // GrimDank class is the master class and as such this comment supersedes... We're testing git give me
         // a break!
@@ -59,6 +60,8 @@ namespace GrimDank
             MapRenderer = new MapRenderer(font12x12, TestLevel);
 
             IsFixedTimeStep = false;
+
+            _globalKeyHandler = new GlobalKeyHandler();
 
         }
 
