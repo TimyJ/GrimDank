@@ -2,7 +2,8 @@
 
 namespace GrimDank
 {
-    // Handles "global" keys that pretty much work everywhere.
+    // Handles "global" keys that pretty much work everywhere. TODO: We probably should be handling InputStack.Add in constructors, because this leads
+    // to it being very confusing what the stack order is (it becomes order of initialization).
     class GlobalKeyHandler : IInputHandler
     {
         public GlobalKeyHandler()

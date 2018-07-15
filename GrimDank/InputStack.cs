@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -11,14 +9,22 @@ namespace GrimDank
 {
     static class InputStack
     {
+        private static readonly double INPUT_DELAY = 0.04f;
+        private static readonly double INITIAL_INPUT_DELAY = 0.8f;
+
         static private List<IInputHandler> _handlers = new List<IInputHandler>();
         static public IReadOnlyList<IInputHandler> Handlers { get => _handlers.AsReadOnly(); }
 
-        private static readonly float INPUT_DELAY = 0.04f;
-        private static readonly float INITIAL_INPUT_DELAY = 0.8f;
-        private static float _timeSinceLastInput;
+        private static double _timeSinceLastInput = 0.0;
         private static bool somethingPressedInitial = false;
         private static bool somethingPressedSubsequent = false;
+
+        private static bool _inputLocked = false;
+        public static bool InputLocked { get => _inputLocked; }
+
+        private static double _timeToLockInput = 0.0;
+        private static double _timeElapsedSinceInputLock = 0.0;
+
 
         private static Keys[] previousPressed = new Keys[0];
 
@@ -32,22 +38,23 @@ namespace GrimDank
 
         static public void Remove(IInputHandler handler) => _handlers.Remove(handler);
 
+        static public void BlockInputFor(double timeInSeconds)
+        {
+            _inputLocked = true;
+            _timeToLockInput = Math.Max(_timeToLockInput, timeInSeconds);
+
+            _timeSinceLastInput = 0;
+            somethingPressedInitial = somethingPressedSubsequent = false;
+        }
+
         static public void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
-
-            // Loop through anything that has been released since last frame; we assume only one thing pressed at a time so this means whatever was pressed was
-            // released. This really, really will NOT support modifiers, like at all, though.
-            foreach (var key in previousPressed.Except(keyboardState.GetPressedKeys()))
-            {
-                somethingPressedInitial = somethingPressedSubsequent = false;
-                _timeSinceLastInput = 0;
-                break;
-            }
-
+            UpdateForReleasedKeys(keyboardState); 
             previousPressed = keyboardState.GetPressedKeys();
+            UpdateInputLock(); 
 
-            if (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY))
+            if (!_inputLocked && (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY)))
             {
                 foreach (var handler in _handlers)
                     if (handler.HandleKeyboard(keyboardState))
@@ -60,8 +67,32 @@ namespace GrimDank
                         break;
                     }
             }
-           else
-                _timeSinceLastInput += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            // Input locked, so just count input-locked timer
+           else if (_inputLocked)
+                _timeElapsedSinceInputLock += gameTime.ElapsedGameTime.TotalSeconds;
+            else
+                _timeSinceLastInput += gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        static private void UpdateForReleasedKeys(KeyboardState keyboardState)
+        {
+            // Loop through anything that has been released since last frame; we assume only one thing pressed at a time so this means whatever was pressed was
+            // released. This really, really will NOT support modifiers, like at all, though.
+            foreach (var key in previousPressed.Except(keyboardState.GetPressedKeys()))
+            {
+                somethingPressedInitial = somethingPressedSubsequent = false;
+                _timeSinceLastInput = 0;
+                break;
+            }
+        }
+
+        static private void UpdateInputLock()
+        {
+            if (_inputLocked && _timeElapsedSinceInputLock >= _timeToLockInput)
+            {
+                _inputLocked = false;
+                _timeElapsedSinceInputLock = _timeToLockInput = 0.0;
+            }
         }
     }
 }

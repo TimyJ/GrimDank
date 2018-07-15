@@ -45,8 +45,10 @@ namespace GrimDank
                 SynchronizeWithVerticalRetrace = false
             };
             graphics.ApplyChanges();
-
             Content.RootDirectory = "Content";
+
+            _globalKeyHandler = new GlobalKeyHandler();
+
             TestLevel = new Map(testMapWidth, testMapHeight);
             TestLevel.GenerateMap();
 
@@ -65,7 +67,6 @@ namespace GrimDank
 
             IsFixedTimeStep = false;
 
-            _globalKeyHandler = new GlobalKeyHandler();
 
         }
 
