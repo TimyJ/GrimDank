@@ -89,18 +89,18 @@ namespace GrimDank
 
             if (dirToMove != Direction.NONE)
             {
-                GrimDank.Player.TakeDamage(5);
-                GrimDank.Player.MoveIn(dirToMove);
+                GrimDank.Instance.Player.TakeDamage(5);
+                GrimDank.Instance.Player.MoveIn(dirToMove);
                 // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
                 // it can simply call calculate for Player's current map.
-                GrimDank.TestLevel.fov.Calculate(GrimDank.Player.Position, 23);
+                GrimDank.Instance.TestLevel.fov.Calculate(GrimDank.Instance.Player.Position, 23);
 
-                foreach (var pos in GrimDank.TestLevel.fov.NewlySeen)
+                foreach (var pos in GrimDank.Instance.TestLevel.fov.NewlySeen)
                 {
-                    GrimDank.TestLevel.SetExplored(true, pos);
+                    GrimDank.Instance.TestLevel.SetExplored(true, pos);
                 }
                 // Ditto above -- hook player move event prolly preferable.
-                GrimDank.MapRenderer.Camera.Area = GrimDank.MapRenderer.Camera.Area.CenterOn(GrimDank.Player.Position);
+                GrimDank.Instance.MapRenderer.Camera.Area = GrimDank.Instance.MapRenderer.Camera.Area.CenterOn(GrimDank.Instance.Player.Position);
             }
 
             if (handledSomething)

@@ -15,7 +15,7 @@ namespace GrimDank
         {
             if (state.IsKeyDown(Keys.Escape))
             {
-                Program.Game.Exit();
+                GrimDank.Instance.Exit();
                 return true;
             }
 

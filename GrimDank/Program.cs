@@ -12,15 +12,14 @@ namespace GrimDank
     /// </summary>
     static class Program
     {
-        public static GrimDank Game { get; private set; }
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            using (Game = new GrimDank())
-                Game.Run();
+            using (var game = new GrimDank())
+                game.Run();
         } 
     }
 }

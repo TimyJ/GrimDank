@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using rectangle = Microsoft.Xna.Framework.Rectangle;
 using GoRogue.MapViews;
 using GoRogue;
+using System.Diagnostics;
 
 namespace GrimDank
 {
@@ -13,13 +13,14 @@ namespace GrimDank
     /// 
     class GrimDank : Game
     {
+        public static GrimDank Instance { get; private set; }
         // Read-only for now just to save writing property code.  But obviously changeable later.
         // Mostly these are here to get the magic constants under control for when we want to start changing
         // things.
-        public static readonly int WINDOW_WIDTH = 1280;
-        public static readonly int WINDOW_HEIGHT = 720;
+        public readonly int WINDOW_WIDTH = 1280;
+        public readonly int WINDOW_HEIGHT = 720;
 
-        static readonly int NUM_MOBJECTS = 200;
+        private readonly int NUM_MOBJECTS = 200;
         
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -27,17 +28,21 @@ namespace GrimDank
         private Texture2D hudTest;
         private SpriteFont fpsFont;
         private FrameCounter counter;
-        private static readonly int testMapWidth = 250;
-        private static readonly int testMapHeight = 250;
+        private readonly int TEST_MAP_WIDTH = 250;
+        private readonly int TEST_MAP_HEIGHT = 250;
 
-        public static Map TestLevel { get; private set; }
-        public static MObjects.Creature Player { get; private set; }
-        public static MapRenderer MapRenderer { get; private set; }
+        public Map TestLevel { get; private set; }
+        public MObjects.Creature Player { get; private set; }
+        public MapRenderer MapRenderer { get; private set; }
 
         private GlobalKeyHandler _globalKeyHandler;
        
         public GrimDank()
         {
+            Debug.Assert(Instance == null); // If not we've created more than one game instance and that's not good...
+
+            Instance = this;
+
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = WINDOW_WIDTH,
@@ -49,7 +54,7 @@ namespace GrimDank
 
             _globalKeyHandler = new GlobalKeyHandler();
 
-            TestLevel = new Map(testMapWidth, testMapHeight);
+            TestLevel = new Map(TEST_MAP_WIDTH, TEST_MAP_HEIGHT);
             TestLevel.GenerateMap();
 
             Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);

@@ -20,7 +20,7 @@ namespace GrimDank
             set
             {
                 _currentFont = value ?? throw new ArgumentNullException(nameof(CurrentFont));
-                Coord screenCells = Coord.Get(GrimDank.WINDOW_WIDTH / _currentFont.FontSize, GrimDank.WINDOW_HEIGHT / _currentFont.FontSize);
+                Coord screenCells = Coord.Get(GrimDank.Instance.WINDOW_WIDTH / _currentFont.FontSize, GrimDank.Instance.WINDOW_HEIGHT / _currentFont.FontSize);
                 Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, screenCells.X, screenCells.Y), CurrentMap.WalkabilityMap.Bounds());
             }
         }
