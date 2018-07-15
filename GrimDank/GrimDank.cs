@@ -29,6 +29,7 @@ namespace GrimDank
         private FrameCounter counter;
         private static readonly int testMapWidth = 250;
         private static readonly int testMapHeight = 250;
+
         public static Map TestLevel { get; private set; }
         public static MObjects.Creature Player { get; private set; }
         public static MapRenderer MapRenderer { get; private set; }

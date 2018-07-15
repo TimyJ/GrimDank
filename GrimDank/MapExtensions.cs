@@ -20,6 +20,9 @@ namespace GrimDank
             ArrayMap<bool> genMap = new ArrayMap<bool>(Width, Height);
             GoRogue.MapGeneration.Generators.CellularAutomataGenerator.Generate(genMap);
 
+            // Can switch to this map gen for perf tests, since FPS is dependent on number of cells, we need a static map to perf-test
+            // GoRogue.MapGeneration.Generators.RectangleMapGenerator.Generate(genMap);
+
             foreach(var pos in genMap.Positions())
             {
                 if (genMap[pos])

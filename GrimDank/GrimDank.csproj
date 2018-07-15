@@ -52,6 +52,7 @@
     <Compile Include="GrimDank.cs" />
     <Compile Include="IInputHandler.cs" />
     <Compile Include="InputStack.cs" />
+    <Compile Include="Lerp2D.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="MapExtensions.cs" />
     <Compile Include="MapRenderer.cs" />
