@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using rectangle = Microsoft.Xna.Framework.Rectangle;
+using XNARect = Microsoft.Xna.Framework.Rectangle;
 using GoRogue;
 using GoRogue.MapViews;
 
@@ -13,17 +13,35 @@ namespace GrimDank
 {
     class MapRenderer
     {
-        public Texture2D CurrentFont;
-        public Map CurrentMap;
-        public BoundedRectangle Camera { get; private set; }
-        private static readonly int FONT_COLUMNS = 16; // Ditto comments on font stuff from GrimDank.cs.  Eventually could go in a Font class
-
-        public MapRenderer(Texture2D font, Map map)
+        private TextureFont _currentFont;
+        public TextureFont CurrentFont
         {
-            CurrentFont = font;
-            CurrentMap = map;
-            Coord screenCells = Coord.Get(GrimDank.WINDOW_WIDTH / GrimDank.FONT_SIZE, GrimDank.WINDOW_HEIGHT / GrimDank.FONT_SIZE);
-            Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, screenCells.X, screenCells.Y), CurrentMap.WalkabilityMap.Bounds());
+            get => _currentFont;
+            set
+            {
+                _currentFont = value ?? throw new ArgumentNullException(nameof(CurrentFont));
+                Coord screenCells = Coord.Get(GrimDank.WINDOW_WIDTH / _currentFont.FontSize, GrimDank.WINDOW_HEIGHT / _currentFont.FontSize);
+                Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, screenCells.X, screenCells.Y), CurrentMap.WalkabilityMap.Bounds());
+            }
+        }
+
+        private Map _currentMap;
+        public Map CurrentMap
+        {
+            get => _currentMap;
+            set
+            {
+                _currentMap = value ?? throw new ArgumentNullException(nameof(CurrentMap));
+                Camera = new BoundedRectangle(new GoRogue.Rectangle(0, 0, Camera.Area.Width, Camera.Area.Height), CurrentMap.WalkabilityMap.Bounds());
+            }
+        }
+        public BoundedRectangle Camera { get; private set; }
+
+        public MapRenderer(TextureFont font, Map map)
+        {
+            _currentMap = map ?? throw new ArgumentNullException(nameof(map));
+            // Calls setter, which takes care of setting up camera
+            CurrentFont = font ?? throw new ArgumentNullException(nameof(font));
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -32,43 +50,44 @@ namespace GrimDank
             //DrawWithIteration(spriteBatch);
         }
 
-        public static Coord WorldToPixel(Coord worldCoords) => worldCoords * GrimDank.FONT_SIZE;
+        public Coord WorldToPixel(Coord worldCoords) => worldCoords * _currentFont.FontSize;
 
-        public static Coord PixelToWorld(Coord pixelCoords) => pixelCoords / 12;
+        public Coord PixelToWorld(Coord pixelCoords) => pixelCoords / _currentFont.FontSize;
 
         public void UpdateCameraSize(int deltaWidth, int deltaHeight)
         {
-            Camera.Area = Camera.Area.ChangeSize(deltaWidth, deltaHeight);
+            Coord center = Camera.Area.Center;
+            // Yes chaining like this makes 2 rectangles (1 temp).  meh, don't care :D
+            Camera.Area = Camera.Area.ChangeSize(deltaWidth, deltaHeight).CenterOn(center);
+
         }
 
         private void DrawWithRaycasting(SpriteBatch spriteBatch)
         {
-            int offsetX = Camera.Area.X*12;
-            int offsetY = Camera.Area.Y*12;
             foreach (var worldPos in Camera.Area.Positions())
             {
                 Coord screenPos = WorldToPixel(worldPos - Camera.Area.Position);
 
                 if (CurrentMap.fov[worldPos.X, worldPos.Y] != 0)
                 {
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                    spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect((char)0),
                                      color: CurrentMap.GetTerrain(worldPos).BackgroundColor);
 
                     var mob = CurrentMap.Raycast(worldPos);
                     if (mob != null)
                     {
-                        spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(mob.glyph),
+                        spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect(mob.glyph),
                                          color: Color.White);
                     }
                     else
                     {
-                        spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                        spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
                                          color: Color.White);
                     }
                 }
                 else if (CurrentMap.GetExplored(worldPos))
                 {
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                    spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
                                      color: Color.Gray);
                 }
             }
@@ -81,9 +100,9 @@ namespace GrimDank
             {
                 Coord screenPos = WorldToPixel(worldPos - Camera.Area.Position);
 
-                spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect((char)0),
                                  color: CurrentMap.GetTerrain(worldPos).BackgroundColor);
-                spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
+                spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect(CurrentMap.GetTerrain(worldPos).Glyph),
                                  color: Color.White);
             }
 
@@ -92,23 +111,16 @@ namespace GrimDank
                 if (Camera.Area.Contains(mob.Position)) {
                     Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
 
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect((char)0),
+                    spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect((char)0),
                                      color: CurrentMap.GetTerrain(mob.Position).BackgroundColor);
-                    spriteBatch.Draw(CurrentFont, destinationRectangle: CellRect(screenPos), sourceRectangle: GlyphRect(mob.glyph),
+                    spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect(mob.glyph),
                                      color: Color.White);
                 }
             } 
                 
         }
 
-        // Gets rectangle from texture representing given character.
-        private static rectangle GlyphRect(char character)
-        {
-            Coord pos = Coord.ToCoord(character, FONT_COLUMNS);
-            return new rectangle(pos.X * GrimDank.FONT_SIZE, pos.Y * GrimDank.FONT_SIZE, GrimDank.FONT_SIZE, GrimDank.FONT_SIZE);
-        }
-
         // Gets the rectangle representing the cell area for the cell located at the given screen coords.
-        private static rectangle CellRect(Coord screenPos) => new rectangle(screenPos.X, screenPos.Y, GrimDank.FONT_SIZE, GrimDank.FONT_SIZE);
+        private XNARect CellRect(Coord screenPos) => new XNARect(screenPos.X, screenPos.Y, CurrentFont.FontSize, CurrentFont.FontSize);
     }
 }

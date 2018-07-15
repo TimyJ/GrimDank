@@ -19,26 +19,21 @@ namespace GrimDank
         public static readonly int WINDOW_WIDTH = 1280;
         public static readonly int WINDOW_HEIGHT = 720;
 
-        // Ditto above -- though if we keep using texture-fonts, probably pull it out to a Font class that pairs the texture2D with the size and suck.
-        // Wasn't worried about that at the moment, but this gets the magic constants under control.
-        public static readonly int FONT_SIZE = 12;
-
-
         static readonly int NUM_MOBJECTS = 200;
         
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        private Texture2D font12x12;
+        private TextureFont font12x12;
         private Texture2D hudTest;
         private SpriteFont fpsFont;
         private FrameCounter counter;
-        private static int testMapWidth = 250;
-        private static int testMapHeight = 250;
+        private static readonly int testMapWidth = 250;
+        private static readonly int testMapHeight = 250;
         public static Map TestLevel { get; private set; }
         public static MObjects.Creature Player { get; private set; }
         public static MapRenderer MapRenderer { get; private set; }
 
-        private static GlobalKeyHandler _globalKeyHandler;
+        private GlobalKeyHandler _globalKeyHandler;
        
         public GrimDank()
         {
@@ -66,8 +61,6 @@ namespace GrimDank
             TestLevel.SetupFOV(Player.Position);
 
             counter = new FrameCounter();
-
-            MapRenderer = new MapRenderer(font12x12, TestLevel);
 
             IsFixedTimeStep = false;
 
@@ -98,8 +91,9 @@ namespace GrimDank
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //load font from the content manager
-            font12x12 = Content.Load<Texture2D>("font12x12");
-            MapRenderer.CurrentFont = font12x12;
+            var fontTexture = Content.Load<Texture2D>("font12x12");
+            font12x12 = new TextureFont(fontTexture, 12, 16);
+            MapRenderer = new MapRenderer(font12x12, TestLevel);
             MessageLog.Write("Font Loaded");
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
