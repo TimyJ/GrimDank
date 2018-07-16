@@ -105,7 +105,7 @@ namespace GrimDank
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
 
-            hudTest = Content.Load<Texture2D>("LIFEBAR1");
+            hudTest = Content.Load<Texture2D>("BetterEnergyBar");
 
             // TODO: use this.Content to load your game content here
         }
@@ -149,15 +149,17 @@ namespace GrimDank
             
             MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
-            float playerHPPercentage = (float)Player.CurrentHP / (float)Player.MaxHP;
+            float playerHPPercentage = (float)Player.CurrentEnergy / (float)Player.MaxEnergy;
             MessageLog.Write(playerHPPercentage.ToString());
-            float drawPosition = WINDOW_HEIGHT - WINDOW_HEIGHT * playerHPPercentage;
+            float drawPosition = 230 - (230 * playerHPPercentage);
             //MessageLog.Write(drawPosition.ToString());
             // TODO: Not sure what these magic constants really are so imma leave them.
-            spriteBatch.Draw(hudTest, new rectangle(0, 0, 110, 720), new rectangle(175, 0, 175, 1080), Color.White);
-            spriteBatch.Draw(hudTest, new rectangle(0, (int)(drawPosition), 100, 720), new rectangle(0, (int)(1080 - 1080*playerHPPercentage), 175, 1080), Color.White);
+            spriteBatch.Draw(hudTest, new rectangle(8, 8, 80, 325), new rectangle(0, 0, 75, 300), Color.White);
+            spriteBatch.Draw(hudTest, new rectangle(28, (int)(drawPosition + 78), 30, 230), new rectangle(75, (int)(drawPosition), 24, 230), Color.White);
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
             spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
+            float print = playerHPPercentage * 100;
+            spriteBatch.DrawString(fpsFont, print.ToString() + "%" , new Vector2(34, 34), Color.GreenYellow);
             
 
             spriteBatch.End();

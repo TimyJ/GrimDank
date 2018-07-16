@@ -68,6 +68,7 @@
     <Compile Include="Terrains\Terrain_Types.cs" />
     <Compile Include="TextureFont.cs" />
     <Compile Include="WalkabilityProvider.cs" />
+    <Compile Include="Weapons\Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GoRogue, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

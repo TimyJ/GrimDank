@@ -10,7 +10,7 @@ namespace GrimDank
     static class InputStack
     {
         private static readonly double INPUT_DELAY = 0.04f;
-        private static readonly double INITIAL_INPUT_DELAY = 0.8f;
+        private static readonly double INITIAL_INPUT_DELAY = 0.4f;
 
         static private List<IInputHandler> _handlers = new List<IInputHandler>();
         static public IReadOnlyList<IInputHandler> Handlers { get => _handlers.AsReadOnly(); }
