@@ -32,6 +32,16 @@ namespace GrimDank
             }
         }
 
+        public void SpawnPunchingBags(int amountToSpawn)
+        {
+            for(int i = 0; i <= amountToSpawn; ++i)
+            {
+                Coord pos = WalkabilityMap.RandomPosition(true);
+                MObjects.Creature mob = new MObjects.Creature(pos, 10, 0, "1d1", 0);
+                Add(mob);
+            }
+        }
+
         public void SetupFOV(Coord playerPos)
         {
             fov = new FOV(ResistanceMap);
@@ -89,16 +99,13 @@ namespace GrimDank
 
             if (dirToMove != Direction.NONE)
             {
-                GrimDank.Instance.Player.TakeDamage(5);
                 if(!GrimDank.Instance.Player.MoveIn(dirToMove))
                 {
-                    MObjects.MObject mob = Raycast(GrimDank.Instance.Player.Position + dirToMove);
-                    if (mob != null)
+                    MObjects.MObject mobject = Raycast(GrimDank.Instance.Player.Position + dirToMove);
+                    MObjects.Creature mob = mobject as MObjects.Creature;
+                    if(mob != null)
                     {
-                        if(mob as MObjects.Creature != null)
-                        {
-                            
-                        }
+                        mob.TakeDamage(10);
                     }
                 }
                 // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where

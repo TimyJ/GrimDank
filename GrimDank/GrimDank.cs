@@ -62,6 +62,7 @@ namespace GrimDank
             Player.glyph = '@';
             TestLevel.Add(Player);
             TestLevel.SetupFOV(Player.Position);
+            TestLevel.SpawnPunchingBags(100);
 
             counter = new FrameCounter();
 

@@ -32,6 +32,7 @@ namespace GrimDank.MObjects
             CurrentEnergy -= amount;
             if (CurrentEnergy <= 0)
             {
+                //not sure if i should do it this way or pass the map as an argument
                 GrimDank.Instance.TestLevel.Remove(this);
             }
         }
