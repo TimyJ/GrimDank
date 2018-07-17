@@ -56,7 +56,7 @@ namespace GrimDank
 
             if (!_inputLocked && (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY)))
             {
-                foreach (var handler in _handlers)
+                foreach (var handler in _handlers.Reverse<IInputHandler>())
                     if (handler.HandleKeyboard(keyboardState))
                     {
                         _timeSinceLastInput = 0;

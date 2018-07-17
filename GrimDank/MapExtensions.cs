@@ -14,6 +14,8 @@ namespace GrimDank
         public FOV fov;
         public ResistanceProvider ResistanceMap { get; private set; }
         public WalkabilityProvider WalkabilityMap { get; private set; }
+        public bool EnemyStatusToggle;
+        public Targetting Targetter;
 
         public void GenerateMap()
         {
@@ -70,6 +72,7 @@ namespace GrimDank
             bool handledSomething = false;
 
             Direction dirToMove = Direction.NONE;
+            EnemyStatusToggle = false;
 
             foreach (int key in state.GetPressedKeys())
             {
@@ -87,6 +90,16 @@ namespace GrimDank
                         break;
                     case (int)Keys.NumPad2:
                         dirToMove = Direction.DOWN;
+                        break;
+                    case (int)Keys.L:
+                        if (Targetter == null)
+                        {
+                            Targetter = new Targetting(GrimDank.Instance.Player.Position, null);
+                            InputStack.Add(Targetter);
+                        }
+                        break;
+                    case (int)Keys.LeftAlt:
+                        EnemyStatusToggle = true;
                         break;
                     default:
                         handledSomething = false;

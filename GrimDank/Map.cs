@@ -23,6 +23,8 @@ namespace GrimDank
 
             _explored = new bool[Width, Height];
 
+            EnemyStatusToggle = false;
+
             _layers = new List<ISpatialMap<MObject>>();
             ResistanceMap = new ResistanceProvider(this);
             WalkabilityMap = new WalkabilityProvider(this);

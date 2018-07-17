@@ -19,14 +19,13 @@ namespace GrimDank
         // things.
         public readonly int WINDOW_WIDTH = 1280;
         public readonly int WINDOW_HEIGHT = 720;
-
-        private readonly int NUM_MOBJECTS = 200;
         
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private TextureFont font12x12;
         private Texture2D hudTest;
-        private SpriteFont fpsFont;
+        public Texture2D reticle;
+        public SpriteFont fpsFont;
         private FrameCounter counter;
         private readonly int TEST_MAP_WIDTH = 250;
         private readonly int TEST_MAP_HEIGHT = 250;
@@ -103,6 +102,8 @@ namespace GrimDank
 
             hudTest = Content.Load<Texture2D>("BetterEnergyBar");
 
+            reticle = Content.Load<Texture2D>("reticles");
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -158,6 +159,7 @@ namespace GrimDank
             float print = playerHPPercentage * 100;
             spriteBatch.DrawString(fpsFont, print.ToString() + "%" , new Vector2(34, 34), Color.GreenYellow);
             
+
 
             spriteBatch.End();
             

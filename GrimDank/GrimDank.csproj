@@ -64,6 +64,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResistanceProvider.cs" />
+    <Compile Include="Targetting.cs" />
     <Compile Include="Terrains\Terrain.cs" />
     <Compile Include="Terrains\Terrain_Types.cs" />
     <Compile Include="TextureFont.cs" />

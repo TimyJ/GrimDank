@@ -18,8 +18,11 @@ namespace GrimDank.MObjects
         //keeps you kicking ass and taking names
         public int DamageMitigation { get; private set; }
 
+        public string Name { get; private set; }
+
         public Creature(Coord pos, int baseEnergy, int attackRating, string weaponDice, int av) : base(Map.Layer.CREATURES, pos)
         {
+            Name = "PunchingBag";
             MaxEnergy = baseEnergy;
             CurrentEnergy = baseEnergy;
             AttackRating = attackRating;

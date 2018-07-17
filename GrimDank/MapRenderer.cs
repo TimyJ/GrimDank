@@ -13,6 +13,8 @@ namespace GrimDank
 {
     class MapRenderer
     {
+        public Lerp2D targetInfoRect;
+
         private TextureFont _currentFont;
         public TextureFont CurrentFont
         {
@@ -48,6 +50,11 @@ namespace GrimDank
         {
             DrawWithRaycasting(spriteBatch);
             //DrawWithIteration(spriteBatch);
+            DisplayEnemyStatus(spriteBatch);
+            if( CurrentMap.Targetter != null )
+            {
+                DisplayTargetting(spriteBatch);
+            }
         }
 
         public Coord WorldToPixel(Coord worldCoords) => worldCoords * _currentFont.FontSize;
@@ -60,6 +67,41 @@ namespace GrimDank
             // Yes chaining like this makes 2 rectangles (1 temp).  meh, don't care :D
             Camera.Area = Camera.Area.ChangeSize(deltaWidth, deltaHeight).CenterOn(center);
 
+        }
+
+        private void DisplayEnemyStatus(SpriteBatch spriteBatch)
+        {
+            if (CurrentMap.EnemyStatusToggle)
+            {
+                if (CurrentMap.Targetter == null)
+                {
+                    foreach (var mob in CurrentMap.MObjects.Cast<MObjects.Creature>())
+                    {
+                        Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
+                        if (Camera.Area.Contains(mob.Position) && CurrentMap.fov[mob.Position] != 0)
+                        {
+                            spriteBatch.Draw(CurrentFont.Texture, new Vector2(screenPos.X + 12, screenPos.Y - 12), new XNARect(0, 0, 12, 12), Color.Black);
+                            spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 25, screenPos.Y - 24, 36, 12), new XNARect(0, 0, 12, 12), Color.Black);
+                            spriteBatch.Draw(CurrentFont.Texture, new Vector2(screenPos.X + 12, screenPos.Y - 12), CurrentFont.GlyphRect('/').ToGoRogueRect().ToXNARect(), Color.LightGreen);
+                            spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.CurrentEnergy.ToString(), new Vector2(screenPos.X + 24, screenPos.Y - 24), Color.Green);
+                        }
+                    }
+                } else
+                {
+                    foreach(MObjects.Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).GetItems(CurrentMap.Targetter.TargetPos)){
+                        Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
+                        spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 40, screenPos.Y, 120, 80), new XNARect(0, 0, 12, 12), Color.Black);
+                        spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.Name, new Vector2(screenPos.X + 40, screenPos.Y), Color.Green);
+                    }
+                    
+                }
+            }
+        }
+
+        private void DisplayTargetting(SpriteBatch spriteBatch)
+        {
+            Coord screenPos = WorldToPixel(CurrentMap.Targetter.TargetPos - Camera.Area.Position);
+            spriteBatch.Draw(GrimDank.Instance.reticle, new XNARect(screenPos.X - 15, screenPos.Y - 15, 40, 40), new XNARect(75, 75, 40, 40), Color.LightGreen);
         }
 
         private void DrawWithRaycasting(SpriteBatch spriteBatch)
