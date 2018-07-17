@@ -67,8 +67,15 @@ namespace GrimDank
             _currentY += dyPerSecond * deltaSeconds;
 
             // Clamp to end position to avoid overshoot
-            _currentX = Math.Min(_currentX, EndPosition.X);
-            _currentY = Math.Min(_currentY, EndPosition.Y);
+            if (StartPosition.X < EndPosition.X)
+                _currentX = Math.Min(_currentX, EndPosition.X);
+            else
+                _currentX = Math.Max(_currentX, EndPosition.X);
+
+            if (StartPosition.Y < EndPosition.Y)
+                _currentY = Math.Min(_currentY, EndPosition.Y);
+            else
+                _currentY = Math.Max(_currentY, EndPosition.Y);
         }
     }
 }
