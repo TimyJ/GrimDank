@@ -30,6 +30,10 @@ namespace GrimDank.MObjects
         public void TakeDamage(int amount)
         {
             CurrentEnergy -= amount;
+            if (CurrentEnergy <= 0)
+            {
+                GrimDank.Instance.TestLevel.Remove(this);
+            }
         }
     }
 }

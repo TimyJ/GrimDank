@@ -61,11 +61,6 @@ namespace GrimDank
             Player = new MObjects.Creature(playerSpawnPos, 100, 10, "1d8", 0);
             Player.glyph = '@';
             TestLevel.Add(Player);
-            
-            for(int i=0; i<NUM_MOBJECTS; ++i)
-            {
-                TestLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, TestLevel.Width)));
-            }
             TestLevel.SetupFOV(Player.Position);
 
             counter = new FrameCounter();
@@ -154,6 +149,7 @@ namespace GrimDank
             float drawPosition = 230 - (230 * playerHPPercentage);
             //MessageLog.Write(drawPosition.ToString());
             // TODO: Not sure what these magic constants really are so imma leave them.
+            //TODO: fix the even more added magic constants. 
             spriteBatch.Draw(hudTest, new rectangle(8, 8, 80, 325), new rectangle(0, 0, 75, 300), Color.White);
             spriteBatch.Draw(hudTest, new rectangle(28, (int)(drawPosition + 78), 30, 230), new rectangle(75, (int)(drawPosition), 24, 230), Color.White);
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);

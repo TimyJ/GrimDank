@@ -90,7 +90,17 @@ namespace GrimDank
             if (dirToMove != Direction.NONE)
             {
                 GrimDank.Instance.Player.TakeDamage(5);
-                GrimDank.Instance.Player.MoveIn(dirToMove);
+                if(!GrimDank.Instance.Player.MoveIn(dirToMove))
+                {
+                    MObjects.MObject mob = Raycast(GrimDank.Instance.Player.Position + dirToMove);
+                    if (mob != null)
+                    {
+                        if(mob as MObjects.Creature != null)
+                        {
+                            
+                        }
+                    }
+                }
                 // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
                 // it can simply call calculate for Player's current map.
                 GrimDank.Instance.TestLevel.fov.Calculate(GrimDank.Instance.Player.Position, 23);
