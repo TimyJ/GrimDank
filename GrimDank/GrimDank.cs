@@ -105,7 +105,7 @@ namespace GrimDank
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
 
-            hudTest = Content.Load<Texture2D>("LIFEBAR1");
+            hudTest = Content.Load<Texture2D>("lifebar1");
 
             // TODO: use this.Content to load your game content here
         }
