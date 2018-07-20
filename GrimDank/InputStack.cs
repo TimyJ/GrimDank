@@ -13,7 +13,10 @@ namespace GrimDank
         private static readonly double INITIAL_INPUT_DELAY = 0.8f;
 
         static private List<IInputHandler> _handlers = new List<IInputHandler>();
-        static public IReadOnlyList<IInputHandler> Handlers { get => _handlers.AsReadOnly(); }
+        // Gets elements in stack order.  Casts to IEnumerable to ensure linq
+        // reverse is called, rather than in-place reverse.
+		static public IEnumerable<IInputHandler> Handlers
+		{ get => ((IEnumerable<IInputHandler>)_handlers).Reverse(); }
 
         private static double _timeSinceLastInput = 0.0;
         private static bool somethingPressedInitial = false;
@@ -32,7 +35,7 @@ namespace GrimDank
         {
             // Debug check for derpsies
             Debug.Assert(!_handlers.Contains(handler));
-
+            
             _handlers.Add(handler);
         }
 
@@ -56,7 +59,7 @@ namespace GrimDank
 
             if (!_inputLocked && (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY)))
             {
-                foreach (var handler in _handlers)
+				foreach (var handler in ((IEnumerable<IInputHandler>)_handlers).Reverse())
                     if (handler.HandleKeyboard(keyboardState))
                     {
                         _timeSinceLastInput = 0;
