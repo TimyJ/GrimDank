@@ -147,7 +147,7 @@ namespace GrimDank
             MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
             float playerHPPercentage = (float)Player.CurrentEnergy / (float)Player.MaxEnergy;
-            MessageLog.Write(playerHPPercentage.ToString());
+            //MessageLog.Write(playerHPPercentage.ToString());
             float drawPosition = 230 - (230 * playerHPPercentage);
             //MessageLog.Write(drawPosition.ToString());
             // TODO: Not sure what these magic constants really are so imma leave them.

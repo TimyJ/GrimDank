@@ -16,7 +16,7 @@ namespace GrimDank
         // Gets elements in stack order.  Casts to IEnumerable to ensure linq
         // reverse is called, rather than in-place reverse.
 		static public IEnumerable<IInputHandler> Handlers
-		{ get => ((IEnumerable<IInputHandler>)_handlers).Reverse(); }
+		{ get => ((IEnumerable<IInputHandler>)new List<IInputHandler>(_handlers)).Reverse(); }
 
         private static double _timeSinceLastInput = 0.0;
         private static bool somethingPressedInitial = false;
@@ -59,7 +59,8 @@ namespace GrimDank
 
             if (!_inputLocked && (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY)))
             {
-				foreach (var handler in ((IEnumerable<IInputHandler>)_handlers).Reverse())
+				var handlers = new List<IInputHandler>(_handlers);
+				foreach (var handler in ((IEnumerable<IInputHandler>)handlers).Reverse())
                     if (handler.HandleKeyboard(keyboardState))
                     {
                         _timeSinceLastInput = 0;

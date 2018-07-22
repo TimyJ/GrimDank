@@ -133,10 +133,7 @@ namespace GrimDank
                 GrimDank.Instance.MapRenderer.Camera.Area = GrimDank.Instance.MapRenderer.Camera.Area.CenterOn(GrimDank.Instance.Player.Position);
             }
 
-            if (handledSomething)
-                return true;
-
-            return false;
+			return handledSomething;
         }
     }
 }

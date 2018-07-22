@@ -1,6 +1,7 @@
 ﻿using GoRogue;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace GrimDank
@@ -20,17 +21,20 @@ namespace GrimDank
             potentialTargets = new List<MObjects.Creature>();
             foreach(Coord position in GrimDank.Instance.TestLevel.fov.CurrentFOV)
             {
-                foreach(MObjects.Creature mob in GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(position))
-                {
-                    if (mob != null)
+                var mob = (MObjects.Creature)GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(position).SingleOrDefault();
+                // Commented for debug, was testing something in linq because of my crash.  Either should work.
+                //foreach(MObjects.Creature mob in GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(position))
+                //{
+                
+                    if (mob != null && mob != GrimDank.Instance.Player) // Temp index fix, just making sure it wasnt an input handling issue
                     {
                         potentialTargets.Add(mob);
                     }
-                }
+                //}
             }
-            if (potentialTargets.Count > 1)
+            if (potentialTargets.Count > 0)
             {
-                TargetPos = potentialTargets[1].Position;
+                TargetPos = potentialTargets[0].Position;
                 CurrentTarget = 0;
             }
         }
@@ -38,9 +42,12 @@ namespace GrimDank
         public bool HandleKeyboard(KeyboardState state)
         {
             Direction dirToMove = Direction.NONE;
-            bool handled = true;
+            bool handled = false;
+            
             foreach (int key in state.GetPressedKeys())
-            { 
+            {
+                handled = true;
+                
                 switch (key)
                 {
                     case (int)Keys.NumPad6:
@@ -61,9 +68,13 @@ namespace GrimDank
                             InputStack.Remove(this);
                             GrimDank.Instance.TestLevel.Targetter = null;
                         }
-                        handled = true;
                         break;
-                    case (int)Keys.Add:
+                    case (int)Keys.H:
+                        CurrentTarget = MathHelpers.WrapAround(CurrentTarget + 1, potentialTargets.Count);
+                        TargetPos = potentialTargets[CurrentTarget].Position;
+                        break;
+
+                        /*
                         if(CurrentTarget < potentialTargets.Count-1)
                         {
                             CurrentTarget += 1;
@@ -75,21 +86,23 @@ namespace GrimDank
                             TargetPos = potentialTargets[CurrentTarget].Position;
                             break;
                         }
+                        */
                     case (int)Keys.Escape:
                         InputStack.Remove(this);
                         GrimDank.Instance.TestLevel.Targetter = null;
-                        handled = true;
                         break;
                     default:
+                        handled = false;
                         break;
                 }
             }
-            if(dirToMove != Direction.NONE)
-            { 
+            if (dirToMove != Direction.NONE)
+            {
                 TargetPos += dirToMove;
-                handled = true;
             }
 
+            if (handled)
+                MessageLog.Write("Returning true from targeter.");
             return handled;
         }
     }

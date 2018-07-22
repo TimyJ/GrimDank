@@ -87,6 +87,9 @@
     <Reference Include="Troschuetz.Random, Version=4.0.0.0, Culture=neutral, PublicKeyToken=2f204b7110a52060, processorArchitecture=MSIL">
       <HintPath>..\packages\Troschuetz.Random.4.3.0\lib\net461\Troschuetz.Random.dll</HintPath>
     </Reference>
+    <Reference Include="GoRogue">
+      <HintPath>bin\DesktopGL\AnyCPU\Debug\GoRogue.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
