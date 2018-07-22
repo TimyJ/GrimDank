@@ -51,15 +51,19 @@ namespace GrimDank
                 switch (key)
                 {
                     case (int)Keys.NumPad6:
+                    case (int)Keys.L:
                         dirToMove = Direction.RIGHT;
                         break;
                     case (int)Keys.NumPad4:
+                    case (int)Keys.H:
                         dirToMove = Direction.LEFT;
                         break;
                     case (int)Keys.NumPad8:
+                    case (int)Keys.K:
                         dirToMove = Direction.UP;
                         break;
                     case (int)Keys.NumPad2:
+                    case (int)Keys.J:
                         dirToMove = Direction.DOWN;
                         break;
                     case (int)Keys.Enter:
@@ -70,6 +74,7 @@ namespace GrimDank
                         }
                         break;
                     case (int)Keys.Add:
+                    case (int)Keys.OemPlus: // Standard =/+ key.  at least for now bc no numpad.
                         CurrentTarget = MathHelpers.WrapAround(CurrentTarget + 1, potentialTargets.Count);
                         TargetPos = potentialTargets[CurrentTarget].Position;
                         break;
