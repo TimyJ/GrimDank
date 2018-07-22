@@ -19,14 +19,13 @@ namespace GrimDank
         // things.
         public readonly int WINDOW_WIDTH = 1280;
         public readonly int WINDOW_HEIGHT = 720;
-
-        private readonly int NUM_MOBJECTS = 200;
         
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private TextureFont font12x12;
         private Texture2D hudTest;
-        private SpriteFont fpsFont;
+        public Texture2D reticle;
+        public SpriteFont fpsFont;
         private FrameCounter counter;
         private readonly int TEST_MAP_WIDTH = 250;
         private readonly int TEST_MAP_HEIGHT = 250;
@@ -61,12 +60,8 @@ namespace GrimDank
             Player = new MObjects.Creature(playerSpawnPos, 100, 10, "1d8", 0);
             Player.glyph = '@';
             TestLevel.Add(Player);
-            
-            for(int i=0; i<NUM_MOBJECTS; ++i)
-            {
-                TestLevel.Add(new MObjects.MObject(Map.Layer.CREATURES, Coord.ToCoord(i, TestLevel.Width)));
-            }
             TestLevel.SetupFOV(Player.Position);
+            TestLevel.SpawnPunchingBags(100);
 
             counter = new FrameCounter();
 
@@ -105,7 +100,9 @@ namespace GrimDank
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
 
-            hudTest = Content.Load<Texture2D>("lifebar1");
+            hudTest = Content.Load<Texture2D>("BetterEnergyBar");
+
+            reticle = Content.Load<Texture2D>("reticles");
 
             // TODO: use this.Content to load your game content here
         }
@@ -149,16 +146,20 @@ namespace GrimDank
             
             MapRenderer.Draw(spriteBatch);
             //spriteBatch.Draw(hudTest, new rectangle(0, 0, 1280, 720), new rectangle(0, 0, 1920, 1080), Color.White);
-            float playerHPPercentage = (float)Player.CurrentHP / (float)Player.MaxHP;
+            float playerHPPercentage = (float)Player.CurrentEnergy / (float)Player.MaxEnergy;
             MessageLog.Write(playerHPPercentage.ToString());
-            float drawPosition = WINDOW_HEIGHT - WINDOW_HEIGHT * playerHPPercentage;
+            float drawPosition = 230 - (230 * playerHPPercentage);
             //MessageLog.Write(drawPosition.ToString());
             // TODO: Not sure what these magic constants really are so imma leave them.
-            spriteBatch.Draw(hudTest, new rectangle(0, 0, 110, 720), new rectangle(175, 0, 175, 1080), Color.White);
-            spriteBatch.Draw(hudTest, new rectangle(0, (int)(drawPosition), 100, 720), new rectangle(0, (int)(1080 - 1080*playerHPPercentage), 175, 1080), Color.White);
+            //TODO: fix the even more added magic constants. 
+            spriteBatch.Draw(hudTest, new rectangle(8, 8, 80, 325), new rectangle(0, 0, 75, 300), Color.White);
+            spriteBatch.Draw(hudTest, new rectangle(28, (int)(drawPosition + 78), 30, 230), new rectangle(75, (int)(drawPosition), 24, 230), Color.White);
             var frames = string.Format("FPS: {0}", counter.AverageFramesPerSecond);
             spriteBatch.DrawString(fpsFont, frames, new Vector2(10, 580), Color.White);
+            float print = playerHPPercentage * 100;
+            spriteBatch.DrawString(fpsFont, print.ToString() + "%" , new Vector2(34, 34), Color.GreenYellow);
             
+
 
             spriteBatch.End();
             

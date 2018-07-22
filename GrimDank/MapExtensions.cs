@@ -14,6 +14,8 @@ namespace GrimDank
         public FOV fov;
         public ResistanceProvider ResistanceMap { get; private set; }
         public WalkabilityProvider WalkabilityMap { get; private set; }
+        public bool EnemyStatusToggle;
+        public Targetting Targetter;
 
         public void GenerateMap()
         {
@@ -29,6 +31,16 @@ namespace GrimDank
                 {
                     _terrain[pos.X, pos.Y] = Terrain.FLOOR;
                 } else { _terrain[pos.X, pos.Y] = Terrain.WALL; }
+            }
+        }
+
+        public void SpawnPunchingBags(int amountToSpawn)
+        {
+            for(int i = 0; i <= amountToSpawn; ++i)
+            {
+                Coord pos = WalkabilityMap.RandomPosition(true);
+                MObjects.Creature mob = new MObjects.Creature(pos, 10, 0, "1d1", 0);
+                Add(mob);
             }
         }
 
@@ -60,6 +72,7 @@ namespace GrimDank
             bool handledSomething = false;
 
             Direction dirToMove = Direction.NONE;
+            EnemyStatusToggle = false;
 
             foreach (int key in state.GetPressedKeys())
             {
@@ -78,6 +91,16 @@ namespace GrimDank
                     case (int)Keys.NumPad2:
                         dirToMove = Direction.DOWN;
                         break;
+                    case (int)Keys.L:
+                        if (Targetter == null)
+                        {
+                            Targetter = new Targetting(GrimDank.Instance.Player.Position, GrimDank.Instance.Player.Attack);
+                            InputStack.Add(Targetter);
+                        }
+                        break;
+                    case (int)Keys.LeftAlt:
+                        EnemyStatusToggle = true;
+                        break;
                     default:
                         handledSomething = false;
                         break;
@@ -89,8 +112,15 @@ namespace GrimDank
 
             if (dirToMove != Direction.NONE)
             {
-                GrimDank.Instance.Player.TakeDamage(5);
-                GrimDank.Instance.Player.MoveIn(dirToMove);
+                if(!GrimDank.Instance.Player.MoveIn(dirToMove))
+                {
+                    MObjects.MObject mobject = Raycast(GrimDank.Instance.Player.Position + dirToMove);
+                    MObjects.Creature mob = mobject as MObjects.Creature;
+                    if(mob != null)
+                    {
+                        mob.TakeDamage(10);
+                    }
+                }
                 // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
                 // it can simply call calculate for Player's current map.
                 GrimDank.Instance.TestLevel.fov.Calculate(GrimDank.Instance.Player.Position, 23);
