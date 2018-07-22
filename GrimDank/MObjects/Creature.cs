@@ -39,5 +39,18 @@ namespace GrimDank.MObjects
                 GrimDank.Instance.TestLevel.Remove(this);
             }
         }
+
+        public bool Attack(Coord targetPos)
+        {
+            foreach(Creature mob in GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(targetPos))
+            {
+                if(mob != null)
+                {
+                    mob.TakeDamage(AttackRating);
+                    return true;
+                }               
+            }
+            return false;
+        }
     }
 }
