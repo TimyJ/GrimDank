@@ -69,11 +69,12 @@ namespace GrimDank
                             GrimDank.Instance.TestLevel.Targetter = null;
                         }
                         break;
-                    case (int)Keys.H:
+                    case (int)Keys.Add:
                         CurrentTarget = MathHelpers.WrapAround(CurrentTarget + 1, potentialTargets.Count);
                         TargetPos = potentialTargets[CurrentTarget].Position;
                         break;
 
+						// I changed this during moar debugging but hey its shorter :D
                         /*
                         if(CurrentTarget < potentialTargets.Count-1)
                         {
