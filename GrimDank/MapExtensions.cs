@@ -80,18 +80,22 @@ namespace GrimDank
                 switch (key)
                 {
                     case (int)Keys.NumPad6:
+                    case (int)Keys.L:
                         dirToMove = Direction.RIGHT;
                         break;
                     case (int)Keys.NumPad4:
+                    case (int)Keys.H:
                         dirToMove = Direction.LEFT;
                         break;
                     case (int)Keys.NumPad8:
+                    case (int)Keys.K:
                         dirToMove = Direction.UP;
                         break;
                     case (int)Keys.NumPad2:
+                    case (int)Keys.J:
                         dirToMove = Direction.DOWN;
                         break;
-                    case (int)Keys.L:
+                    case (int)Keys.T:
                         if (Targetter == null)
                         {
                             Targetter = new Targetting(GrimDank.Instance.Player.Position, GrimDank.Instance.Player.Attack);
@@ -133,7 +137,7 @@ namespace GrimDank
                 GrimDank.Instance.MapRenderer.Camera.Area = GrimDank.Instance.MapRenderer.Camera.Area.CenterOn(GrimDank.Instance.Player.Position);
             }
 
-			return handledSomething;
+            return handledSomething;
         }
     }
 }
