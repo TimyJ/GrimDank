@@ -90,16 +90,6 @@ namespace GrimDank.MObjects.Components
                 }
                 else // We moved so our turn is done.
                     IsTakingTurn = false;
-                // Prolly should hook be a thing that happens as an eventHandler to Player.Moved, where
-                // it can simply call calculate for Player's current map.
-                Parent.CurrentMap.fov.Calculate(Parent.Position, 23);
-
-                foreach (var pos in Parent.CurrentMap.fov.NewlySeen)
-                {
-                    Parent.CurrentMap.SetExplored(true, pos);
-                }
-                // Ditto above -- hook player move event prolly preferable.
-                GrimDank.Instance.MapRenderer.Camera.Area = GrimDank.Instance.MapRenderer.Camera.Area.CenterOn(GrimDank.Instance.Player.Position);
             }
 
             return handledSomething;

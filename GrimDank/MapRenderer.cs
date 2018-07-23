@@ -78,7 +78,7 @@ namespace GrimDank
                     foreach (MObjects.Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).Items)
                     {
                         Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
-                        if (Camera.Area.Contains(mob.Position) && CurrentMap.fov[mob.Position] != 0)
+                        if (Camera.Area.Contains(mob.Position) && CurrentMap.FOVAt(mob.Position) != 0)
                         {
                             spriteBatch.Draw(CurrentFont.Texture, new Vector2(screenPos.X + 12, screenPos.Y - 12), new XNARect(0, 0, 12, 12), Color.Black);
                             spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 25, screenPos.Y - 24, 36, 12), new XNARect(0, 0, 12, 12), Color.Black);
@@ -107,7 +107,7 @@ namespace GrimDank
             {
                 Coord screenPos = WorldToPixel(worldPos - Camera.Area.Position);
 
-                if (CurrentMap.fov[worldPos.X, worldPos.Y] != 0)
+                if (CurrentMap.FOVAt(worldPos.X, worldPos.Y) != 0)
                 {
                     spriteBatch.Draw(CurrentFont.Texture, destinationRectangle: CellRect(screenPos), sourceRectangle: CurrentFont.GlyphRect((char)0),
                                      color: CurrentMap.GetTerrain(worldPos).BackgroundColor);

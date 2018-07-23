@@ -1,6 +1,7 @@
 ﻿using GoRogue.MapViews;
 using GoRogue;
 using GrimDank.Terrains;
+using System.Collections.Generic;
 using GoRogue.MapGeneration;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,11 +12,15 @@ namespace GrimDank
     {
         private Terrain[,] _terrain;
         private bool[,] _explored;
-        public FOV fov;
+        private FOV _fov;
         public ResistanceProvider ResistanceMap { get; private set; }
         public WalkabilityProvider WalkabilityMap { get; private set; }
         public bool EnemyStatusToggle;
         public Targetting Targetter;
+
+        public IEnumerable<Coord> CurrentFOV { get => _fov.CurrentFOV; }
+        public IEnumerable<Coord> NewlySeen { get => _fov.NewlySeen; }
+        public IEnumerable<Coord> NewlyUnseen { get => _fov.NewlyUnseen; }
 
         public void GenerateMap()
         {
@@ -44,15 +49,22 @@ namespace GrimDank
             }
         }
 
-        public void SetupFOV(Coord playerPos)
+        public void SetupFOV(Coord playerPos, int initialRadius)
         {
-            fov = new FOV(ResistanceMap);
-            fov.Calculate(playerPos, 23); // TODO: Just flagging magic constant (FOV Radius)
-            foreach (var pos in fov.CurrentFOV)
-            {
-                SetExplored(true, pos);
-            }
+            _fov = new FOV(ResistanceMap);
+            RecalculateFOV(playerPos, initialRadius);
         }
+
+        public void RecalculateFOV(Coord center, int radius)
+        {
+            _fov.Calculate(center, radius);
+
+            foreach (var pos in _fov.NewlySeen)
+                _explored[pos.X, pos.Y] = true;
+        }
+
+        public double FOVAt(Coord position) => _fov[position];
+        public double FOVAt(int x, int y) => _fov[x, y];
 
         // Returns the terrain at a given location, or null if no terrain has been set.
         public Terrain GetTerrain(Coord position) => _terrain[position.X, position.Y];

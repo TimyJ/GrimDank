@@ -149,13 +149,6 @@ namespace GrimDank
         //returns the explored status at a given location
         public bool GetExplored(Coord position) => _explored[position.X, position.Y];
 
-        
-
-        public void SetExplored(bool status, Coord position)
-        {
-            _explored[position.X, position.Y] = status;
-        }
-
         public bool IsWalkable(Coord position)
         {
             if (_terrain[position.X, position.Y] != null && !_terrain[position.X, position.Y].IsWalkable)

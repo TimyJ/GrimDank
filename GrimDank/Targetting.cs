@@ -27,7 +27,7 @@ namespace GrimDank
 
             _targetValidator = targetValidator ?? DEFAULT_TARGET_VALIDATOR;
             // Create list of valid target locations in FOV, according to our selector
-            _validTargets = new List<Coord>(GrimDank.Instance.TestLevel.fov.CurrentFOV.Where(_targetValidator));
+            _validTargets = new List<Coord>(GrimDank.Instance.TestLevel.CurrentFOV.Where(_targetValidator));
 
             // -1 if the original given position isn't a valid target, otherwise we start at that point in the list.
             var _currentTargetIndex = _validTargets.FindIndex(c => c == targetPos);

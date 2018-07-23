@@ -60,7 +60,7 @@ namespace GrimDank
             Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);
             Player = new MObjects.Player(playerSpawnPos);
             TestLevel.Add(Player);
-            TestLevel.SetupFOV(Player.Position);
+            TestLevel.SetupFOV(Player.Position, Player.FOVRange);
             TestLevel.SpawnPunchingBags(100);
 
             TurnManager = new TurnManager(TestLevel);
@@ -98,6 +98,7 @@ namespace GrimDank
             var fontTexture = Content.Load<Texture2D>("font12x12");
             font12x12 = new TextureFont(fontTexture, 12, 16);
             MapRenderer = new MapRenderer(font12x12, TestLevel);
+            MapRenderer.Camera.Area = MapRenderer.Camera.Area.CenterOn(Player.Position);
             MessageLog.Write("Font Loaded");
 
             fpsFont = Content.Load<SpriteFont>("_spritefont");
