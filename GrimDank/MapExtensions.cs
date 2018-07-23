@@ -16,7 +16,7 @@ namespace GrimDank
         public ResistanceProvider ResistanceMap { get; private set; }
         public WalkabilityProvider WalkabilityMap { get; private set; }
         public bool EnemyStatusToggle;
-        public Targetting Targetter;
+        public Targeting Targeter;
 
         public IEnumerable<Coord> CurrentFOV { get => _fov.CurrentFOV; }
         public IEnumerable<Coord> NewlySeen { get => _fov.NewlySeen; }

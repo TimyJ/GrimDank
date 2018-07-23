@@ -58,11 +58,11 @@ namespace GrimDank.MObjects.Components
                         dirToMove = Direction.DOWN;
                         break;
                     case (int)Keys.T:
-                        if (Parent.CurrentMap.Targetter == null)
+                        if (Parent.CurrentMap.Targeter == null)
                         {
-                            Parent.CurrentMap.Targetter = new Targetting(c => MessageLog.Write($"Targeted {c}"), Parent.Position);
+                            Parent.CurrentMap.Targeter = new Targeting(c => MessageLog.Write($"Targeted {c}"));
                             // This should probably add itself.
-                            InputStack.Add(Parent.CurrentMap.Targetter);
+                            InputStack.Add(Parent.CurrentMap.Targeter);
                         }
                         break;
                     case (int)Keys.LeftAlt:

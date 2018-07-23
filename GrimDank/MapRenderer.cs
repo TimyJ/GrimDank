@@ -51,9 +51,9 @@ namespace GrimDank
             DrawWithRaycasting(spriteBatch);
             //DrawWithIteration(spriteBatch);
             DisplayEnemyStatus(spriteBatch);
-            if( CurrentMap.Targetter != null )
+            if( CurrentMap.Targeter != null )
             {
-                DisplayTargetting(spriteBatch);
+                DisplayTargeting(spriteBatch);
             }
         }
 
@@ -73,7 +73,7 @@ namespace GrimDank
         {
             if (CurrentMap.EnemyStatusToggle)
             {
-                if (CurrentMap.Targetter == null)
+                if (CurrentMap.Targeter == null)
                 {
                     foreach (MObjects.Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).Items)
                     {
@@ -86,7 +86,7 @@ namespace GrimDank
                             spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.CurrentEnergy.ToString(), new Vector2(screenPos.X + 24, screenPos.Y - 24), Color.Green);
                         }
                     }
-                } else if (CurrentMap.GetSoleItem(Map.Layer.CREATURES, CurrentMap.Targetter.TargetPos) is MObjects.Creature mob)
+                } else if (CurrentMap.GetSoleItem(Map.Layer.CREATURES, CurrentMap.Targeter.TargetPos) is MObjects.Creature mob)
                 {
                     Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
                     spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 40, screenPos.Y, 120, 80), new XNARect(0, 0, 12, 12), Color.Black);
@@ -95,9 +95,9 @@ namespace GrimDank
             }
         }
 
-        private void DisplayTargetting(SpriteBatch spriteBatch)
+        private void DisplayTargeting(SpriteBatch spriteBatch)
         {
-            Coord screenPos = WorldToPixel(CurrentMap.Targetter.TargetPos - Camera.Area.Position);
+            Coord screenPos = WorldToPixel(CurrentMap.Targeter.TargetPos - Camera.Area.Position);
             spriteBatch.Draw(GrimDank.Instance.reticle, new XNARect(screenPos.X - 15, screenPos.Y - 15, 40, 40), new XNARect(75, 75, 40, 40), Color.LightGreen);
         }
 

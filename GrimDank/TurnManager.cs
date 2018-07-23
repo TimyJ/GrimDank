@@ -33,7 +33,6 @@ namespace GrimDank
                 }
                 else
                 {
-                    MessageLog.Write("Taking NPC turns...");
                     // TODO: We clone the list so death doesn't screw things, but that means we NEED to death-check this, probably from the AI side, not here
                     foreach (Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).Items.ToList())
                     {

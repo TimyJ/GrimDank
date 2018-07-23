@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace GrimDank
 {
-    class Targetting : IInputHandler
+    class Targeting : IInputHandler
     {
         public Coord TargetPos { get; private set; }
         private Func<Coord, bool> _targetValidator;
@@ -20,17 +20,32 @@ namespace GrimDank
                                                                             (GrimDank.Instance.TestLevel.Raycast(c, m => m is MObjects.Creature) != null);
 
         // Default to just targeting creatures.
-        public Targetting(Action<Coord> onTargetSelected, Coord targetPos, Func<Coord, bool> targetValidator = null)
+        public Targeting(Action<Coord> onTargetSelected, Coord targetPos = null, Func<Coord, bool> targetValidator = null)
         {
-            TargetPos = targetPos;
             _onTargetSelected = onTargetSelected;
 
             _targetValidator = targetValidator ?? DEFAULT_TARGET_VALIDATOR;
             // Create list of valid target locations in FOV, according to our selector
             _validTargets = new List<Coord>(GrimDank.Instance.TestLevel.CurrentFOV.Where(_targetValidator));
 
-            // -1 if the original given position isn't a valid target, otherwise we start at that point in the list.
-            var _currentTargetIndex = _validTargets.FindIndex(c => c == targetPos);
+            if (_validTargets.Count == 0)
+            {
+                MessageLog.Write("No valid targets.");
+                InputStack.Remove(this);
+                GrimDank.Instance.TestLevel.Targeter = null;
+            }
+
+            if (targetPos != null) // -1 if the original given position isn't a valid target, otherwise we start at that point in the list.
+            {
+                _currentTargetIndex = _validTargets.FindIndex(c => c == targetPos);
+                TargetPos = targetPos;
+            }
+            else // There are valid targets but we didn't select a position so default to first target in list
+            {
+                _currentTargetIndex = 0;
+                TargetPos = _validTargets[_currentTargetIndex];
+            }
+
 
         }
 
@@ -66,7 +81,7 @@ namespace GrimDank
                         {
                             _onTargetSelected(TargetPos);
                             InputStack.Remove(this);
-                            GrimDank.Instance.TestLevel.Targetter = null;
+                            GrimDank.Instance.TestLevel.Targeter = null;
                         }
                         break;
                     case (int)Keys.Add:
@@ -80,7 +95,7 @@ namespace GrimDank
 
                     case (int)Keys.Escape:
                         InputStack.Remove(this);
-                        GrimDank.Instance.TestLevel.Targetter = null;
+                        GrimDank.Instance.TestLevel.Targeter = null;
                         break;
                     default:
                         handled = false;
@@ -96,8 +111,6 @@ namespace GrimDank
                 TargetPos += dirToMove;
             }
 
-            if (handled)
-                MessageLog.Write("Returning true from targeter.");
             return handled;
         }
     }
