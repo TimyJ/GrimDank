@@ -1,5 +1,6 @@
 ﻿using GoRogue.MapViews;
 using GoRogue;
+using GoRogue.Pathing;
 using GrimDank.Terrains;
 using System.Collections.Generic;
 using GoRogue.MapGeneration;
@@ -13,8 +14,9 @@ namespace GrimDank
         private Terrain[,] _terrain;
         private bool[,] _explored;
         private FOV _fov;
-        public ResistanceProvider ResistanceMap { get; private set; }
-        public WalkabilityProvider WalkabilityMap { get; private set; }
+        public IMapView<double> ResistanceMap { get; private set; }
+        public IMapView<bool> WalkabilityMap { get; private set; }
+        public AStar Pather { get; private set; }
         public bool EnemyStatusToggle;
         public Targeting Targeter;
 

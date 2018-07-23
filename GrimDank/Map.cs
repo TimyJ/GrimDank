@@ -1,4 +1,5 @@
 ﻿using GoRogue;
+using GoRogue.Pathing;
 using GrimDank.MObjects;
 using GrimDank.Terrains;
 using System;
@@ -27,8 +28,9 @@ namespace GrimDank
             EnemyStatusToggle = false;
 
             _layers = new List<ISpatialMap<MObject>>();
-            ResistanceMap = new ResistanceProvider(this);
-            WalkabilityMap = new WalkabilityProvider(this);
+            ResistanceMap = new LambdaMapView<double>(Width, Height, pos => IsTransparent(pos) ? 0 : 1);
+            WalkabilityMap = new LambdaMapView<bool>(Width, Height, IsWalkable);
+            Pather = new AStar(WalkabilityMap, Distance.CHEBYSHEV);
             
 
             for (int i = 0; i < _layerSize; i++)
