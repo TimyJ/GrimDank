@@ -75,7 +75,7 @@ namespace GrimDank
             {
                 if (CurrentMap.Targetter == null)
                 {
-                    foreach (var mob in CurrentMap.MObjects.Cast<MObjects.Creature>())
+                    foreach (MObjects.Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).Items)
                     {
                         Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
                         if (Camera.Area.Contains(mob.Position) && CurrentMap.fov[mob.Position] != 0)
@@ -86,14 +86,11 @@ namespace GrimDank
                             spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.CurrentEnergy.ToString(), new Vector2(screenPos.X + 24, screenPos.Y - 24), Color.Green);
                         }
                     }
-                } else
+                } else if (CurrentMap.GetSoleItem(Map.Layer.CREATURES, CurrentMap.Targetter.TargetPos) is MObjects.Creature mob)
                 {
-                    foreach(MObjects.Creature mob in CurrentMap.GetLayer(Map.Layer.CREATURES).GetItems(CurrentMap.Targetter.TargetPos)){
-                        Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
-                        spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 40, screenPos.Y, 120, 80), new XNARect(0, 0, 12, 12), Color.Black);
-                        spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.Name, new Vector2(screenPos.X + 40, screenPos.Y), Color.Green);
-                    }
-                    
+                    Coord screenPos = WorldToPixel(mob.Position - Camera.Area.Position);
+                    spriteBatch.Draw(CurrentFont.Texture, new XNARect(screenPos.X + 40, screenPos.Y, 120, 80), new XNARect(0, 0, 12, 12), Color.Black);
+                    spriteBatch.DrawString(GrimDank.Instance.fpsFont, mob.Name, new Vector2(screenPos.X + 40, screenPos.Y), Color.Green);
                 }
             }
         }

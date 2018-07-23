@@ -3,6 +3,7 @@ using GrimDank.MObjects;
 using GrimDank.Terrains;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GoRogue.MapViews;
 
 
@@ -113,6 +114,14 @@ namespace GrimDank
         {
             foreach (var layer in _layers)
                 yield return layer.AsReadOnly();
+        }
+
+        public MObject GetSoleItem(Layer layer, Coord position)
+        {
+            if (_layerCanHaveMultipleItems[(int)layer])
+                throw new InvalidOperationException("Cannot get sole item on layer that could possibly have multiple items.");
+
+            return GetLayer(layer).GetItems(position).FirstOrDefault();
         }
 
         // Returns the first MObject we find raycasting from the topmost layer down, or null if no MObject.

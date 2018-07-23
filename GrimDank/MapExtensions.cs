@@ -98,7 +98,7 @@ namespace GrimDank
                     case (int)Keys.T:
                         if (Targetter == null)
                         {
-                            Targetter = new Targetting(GrimDank.Instance.Player.Position, GrimDank.Instance.Player.Attack);
+                            Targetter = new Targetting(GrimDank.Instance.Player.Position, c => MessageLog.Write($"Targeted {c}"));
                             InputStack.Add(Targetter);
                         }
                         break;
@@ -119,8 +119,7 @@ namespace GrimDank
                 if(!GrimDank.Instance.Player.MoveIn(dirToMove))
                 {
                     MObjects.MObject mobject = Raycast(GrimDank.Instance.Player.Position + dirToMove);
-                    MObjects.Creature mob = mobject as MObjects.Creature;
-                    if(mob != null)
+                    if (mobject is MObjects.Creature mob) // Nice shorthand -- if mobjet is Creature, call it mob and let me work with it
                     {
                         mob.TakeDamage(10);
                     }

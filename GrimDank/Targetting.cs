@@ -8,35 +8,29 @@ namespace GrimDank
 {
     class Targetting : IInputHandler
     {
-        public Coord TargetPos;
-        private Func<Coord, bool> ActionOnSelection;
-        private List<MObjects.Creature> potentialTargets;
-        private int CurrentTarget;
+        public Coord TargetPos { get; private set; }
+        private Func<Coord, bool> _targetValidator;
+        private Action<Coord> _onTargetSelected;
 
+        private List<Coord> _validTargets;
+        private int _currentTargetIndex; // CANNOT assume this is in sync with TargetPos, because if we're free-floating the cursor it probably isnt.
 
-        public Targetting(Coord pos, Func<Coord, bool> act)
+        private static readonly Func<Coord, bool> DEFAULT_TARGET_VALIDATOR = c =>
+                                                                            (GrimDank.Instance.TestLevel.Raycast(c, m => m is MObjects.Creature) != null);
+
+        // Default to just targeting creatures.
+        public Targetting(Coord pos, Action<Coord> onTargetSelected, Func<Coord, bool> targetValidator = null)
         {
             TargetPos = pos;
-            ActionOnSelection = act;
-            potentialTargets = new List<MObjects.Creature>();
-            foreach(Coord position in GrimDank.Instance.TestLevel.fov.CurrentFOV)
-            {
-                var mob = (MObjects.Creature)GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(position).SingleOrDefault();
-                // Commented for debug, was testing something in linq because of my crash.  Either should work.
-                //foreach(MObjects.Creature mob in GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(position))
-                //{
-                
-                    if (mob != null && mob != GrimDank.Instance.Player) // Temp index fix, just making sure it wasnt an input handling issue
-                    {
-                        potentialTargets.Add(mob);
-                    }
-                //}
-            }
-            if (potentialTargets.Count > 0)
-            {
-                TargetPos = potentialTargets[0].Position;
-                CurrentTarget = 0;
-            }
+            _onTargetSelected = onTargetSelected;
+
+            _targetValidator = targetValidator ?? DEFAULT_TARGET_VALIDATOR;
+            // Create list of valid target locations in FOV, according to our selector
+            _validTargets = new List<Coord>(GrimDank.Instance.TestLevel.fov.CurrentFOV.Where(_targetValidator));
+
+            // -1 if the original position isn't a valid target, otherwise we start at that point in the list.
+            var _currentTargetIndex = _validTargets.FindIndex(c => c == pos);
+
         }
 
         public bool HandleKeyboard(KeyboardState state)
@@ -66,33 +60,23 @@ namespace GrimDank
                     case (int)Keys.J:
                         dirToMove = Direction.DOWN;
                         break;
-                    case (int)Keys.Enter:
-                        if (ActionOnSelection(TargetPos))
+                    case (int)Keys.Enter: 
+                        if (_targetValidator(TargetPos)) // CurrentPos is valid
                         {
+                            _onTargetSelected(TargetPos);
                             InputStack.Remove(this);
                             GrimDank.Instance.TestLevel.Targetter = null;
                         }
                         break;
                     case (int)Keys.Add:
-                    case (int)Keys.OemPlus: // Standard =/+ key.  at least for now bc no numpad.
-                        CurrentTarget = MathHelpers.WrapAround(CurrentTarget + 1, potentialTargets.Count);
-                        TargetPos = potentialTargets[CurrentTarget].Position;
+                        // This works even if we started at -1.
+                        if (_validTargets.Count != 0)
+                        {
+                            _currentTargetIndex = MathHelpers.WrapAround(_currentTargetIndex + 1, _validTargets.Count);
+                            TargetPos = _validTargets[_currentTargetIndex];
+                        }
                         break;
 
-						// I changed this during moar debugging but hey its shorter :D
-                        /*
-                        if(CurrentTarget < potentialTargets.Count-1)
-                        {
-                            CurrentTarget += 1;
-                            TargetPos = potentialTargets[CurrentTarget].Position;
-                            break;
-                        } else
-                        {
-                            CurrentTarget = 0;
-                            TargetPos = potentialTargets[CurrentTarget].Position;
-                            break;
-                        }
-                        */
                     case (int)Keys.Escape:
                         InputStack.Remove(this);
                         GrimDank.Instance.TestLevel.Targetter = null;
@@ -102,8 +86,12 @@ namespace GrimDank
                         break;
                 }
             }
+
+            // Here we purposely do NOT reset the _currentTargetIndex to -1, to preserve the starting point in case the user presses + sometime again
+            // in the future (we pick up where we left off)
             if (dirToMove != Direction.NONE)
             {
+
                 TargetPos += dirToMove;
             }
 

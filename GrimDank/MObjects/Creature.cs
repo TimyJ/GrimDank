@@ -36,19 +36,19 @@ namespace GrimDank.MObjects
             if (CurrentEnergy <= 0)
             {
                 //not sure if i should do it this way or pass the map as an argument
-                GrimDank.Instance.TestLevel.Remove(this);
+                // TODO: This may ?? get a bit wack if we're in a turn loop here (becuase remove might later remove from the list thats being iterated over)
+                // but I think that's solvable on that side.
+                CurrentMap?.Remove(this);
             }
         }
 
+        // TODO: Hmph.  I feel like this function could be a raycast like Raycast(targetPos, m => m is Creature) -- though technically this is more efficient
         public bool Attack(Coord targetPos)
         {
-            foreach(Creature mob in GrimDank.Instance.TestLevel.GetLayer(Map.Layer.CREATURES).GetItems(targetPos))
+            if (CurrentMap.GetSoleItem(Map.Layer.CREATURES, targetPos) is Creature mob) // If we has a mob
             {
-                if(mob != null)
-                {
-                    mob.TakeDamage(AttackRating);
-                    return true;
-                }               
+                mob.TakeDamage(AttackRating);
+                return true;
             }
             return false;
         }
