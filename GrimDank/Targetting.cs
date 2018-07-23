@@ -15,21 +15,22 @@ namespace GrimDank
         private List<Coord> _validTargets;
         private int _currentTargetIndex; // CANNOT assume this is in sync with TargetPos, because if we're free-floating the cursor it probably isnt.
 
+        // TODO: Yes this allows the player to be targeted.  Should probably prevent that.
         private static readonly Func<Coord, bool> DEFAULT_TARGET_VALIDATOR = c =>
                                                                             (GrimDank.Instance.TestLevel.Raycast(c, m => m is MObjects.Creature) != null);
 
         // Default to just targeting creatures.
-        public Targetting(Coord pos, Action<Coord> onTargetSelected, Func<Coord, bool> targetValidator = null)
+        public Targetting(Action<Coord> onTargetSelected, Coord targetPos, Func<Coord, bool> targetValidator = null)
         {
-            TargetPos = pos;
+            TargetPos = targetPos;
             _onTargetSelected = onTargetSelected;
 
             _targetValidator = targetValidator ?? DEFAULT_TARGET_VALIDATOR;
             // Create list of valid target locations in FOV, according to our selector
             _validTargets = new List<Coord>(GrimDank.Instance.TestLevel.fov.CurrentFOV.Where(_targetValidator));
 
-            // -1 if the original position isn't a valid target, otherwise we start at that point in the list.
-            var _currentTargetIndex = _validTargets.FindIndex(c => c == pos);
+            // -1 if the original given position isn't a valid target, otherwise we start at that point in the list.
+            var _currentTargetIndex = _validTargets.FindIndex(c => c == targetPos);
 
         }
 

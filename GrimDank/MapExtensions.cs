@@ -98,7 +98,7 @@ namespace GrimDank
                     case (int)Keys.T:
                         if (Targetter == null)
                         {
-                            Targetter = new Targetting(GrimDank.Instance.Player.Position, c => MessageLog.Write($"Targeted {c}"));
+                            Targetter = new Targetting(c => MessageLog.Write($"Targeted {c}"), GrimDank.Instance.Player.Position);
                             InputStack.Add(Targetter);
                         }
                         break;
