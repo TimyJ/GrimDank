@@ -49,58 +49,54 @@ namespace GrimDank
 
         }
 
-        public bool HandleKeyboard(KeyboardState state)
+        public bool HandleKeyboard(Keys key, ModifierState modifierState)
         {
             Direction dirToMove = Direction.NONE;
-            bool handled = false;
+            bool handled = true;
             
-            foreach (int key in state.GetPressedKeys())
-            {
-                handled = true;
                 
-                switch (key)
-                {
-                    case (int)Keys.NumPad6:
-                    case (int)Keys.L:
-                        dirToMove = Direction.RIGHT;
-                        break;
-                    case (int)Keys.NumPad4:
-                    case (int)Keys.H:
-                        dirToMove = Direction.LEFT;
-                        break;
-                    case (int)Keys.NumPad8:
-                    case (int)Keys.K:
-                        dirToMove = Direction.UP;
-                        break;
-                    case (int)Keys.NumPad2:
-                    case (int)Keys.J:
-                        dirToMove = Direction.DOWN;
-                        break;
-                    case (int)Keys.Enter: 
-                        if (_targetValidator(TargetPos)) // CurrentPos is valid
-                        {
-                            _onTargetSelected(TargetPos);
-                            InputStack.Remove(this);
-                            GrimDank.Instance.TestLevel.Targeter = null;
-                        }
-                        break;
-                    case (int)Keys.Add:
-                        // This works even if we started at -1.
-                        if (_validTargets.Count != 0)
-                        {
-                            _currentTargetIndex = MathHelpers.WrapAround(_currentTargetIndex + 1, _validTargets.Count);
-                            TargetPos = _validTargets[_currentTargetIndex];
-                        }
-                        break;
-
-                    case (int)Keys.Escape:
+            switch (key)
+            {
+                case Keys.NumPad6:
+                case Keys.L:
+                    dirToMove = Direction.RIGHT;
+                    break;
+                case Keys.NumPad4:
+                case Keys.H:
+                    dirToMove = Direction.LEFT;
+                    break;
+                case Keys.NumPad8:
+                case Keys.K:
+                    dirToMove = Direction.UP;
+                    break;
+                case Keys.NumPad2:
+                case Keys.J:
+                    dirToMove = Direction.DOWN;
+                    break;
+                case Keys.Enter: 
+                    if (_targetValidator(TargetPos)) // CurrentPos is valid
+                    {
+                        _onTargetSelected(TargetPos);
                         InputStack.Remove(this);
                         GrimDank.Instance.TestLevel.Targeter = null;
-                        break;
-                    default:
-                        handled = false;
-                        break;
-                }
+                    }
+                    break;
+                case Keys.Add:
+                    // This works even if we started at -1.
+                    if (_validTargets.Count != 0)
+                    {
+                        _currentTargetIndex = MathHelpers.WrapAround(_currentTargetIndex + 1, _validTargets.Count);
+                        TargetPos = _validTargets[_currentTargetIndex];
+                    }
+                    break;
+
+                case Keys.Escape:
+                    InputStack.Remove(this);
+                    GrimDank.Instance.TestLevel.Targeter = null;
+                    break;
+                default:
+                    handled = false;
+                    break;
             }
 
             // Here we purposely do NOT reset the _currentTargetIndex to -1, to preserve the starting point in case the user presses + sometime again

@@ -29,51 +29,44 @@ namespace GrimDank.MObjects.Components
         public PlayerAI(Player parent)
             : base(parent) { }
 
-        public bool HandleKeyboard(KeyboardState state)
+        public bool HandleKeyboard(Keys key, ModifierState modifierState)
         {
-            bool handledSomething = false;
+            bool handledSomething = true;
 
             Direction dirToMove = Direction.NONE;
             Parent.CurrentMap.EnemyStatusToggle = false;
 
-            foreach (int key in state.GetPressedKeys())
+            switch (key)
             {
-                handledSomething = true;
-                switch (key)
-                {
-                    case (int)Keys.NumPad6:
-                    case (int)Keys.L:
-                        dirToMove = Direction.RIGHT;
-                        break;
-                    case (int)Keys.NumPad4:
-                    case (int)Keys.H:
-                        dirToMove = Direction.LEFT;
-                        break;
-                    case (int)Keys.NumPad8:
-                    case (int)Keys.K:
-                        dirToMove = Direction.UP;
-                        break;
-                    case (int)Keys.NumPad2:
-                    case (int)Keys.J:
-                        dirToMove = Direction.DOWN;
-                        break;
-                    case (int)Keys.T:
-                        if (Parent.CurrentMap.Targeter == null)
-                        {
-                            Parent.CurrentMap.Targeter = new Targeting(c => MessageLog.Write($"Targeted {c}"));
-                            // This should probably add itself.
-                            InputStack.Add(Parent.CurrentMap.Targeter);
-                        }
-                        break;
-                    case (int)Keys.LeftAlt:
-                        Parent.CurrentMap.EnemyStatusToggle = true;
-                        break;
-                    default:
-                        handledSomething = false;
-                        break;
-                }
-
-                if (handledSomething)
+                case Keys.NumPad6:
+                case Keys.L:
+                    dirToMove = Direction.RIGHT;
+                    break;
+                case Keys.NumPad4:
+                case Keys.H:
+                    dirToMove = Direction.LEFT;
+                    break;
+                case Keys.NumPad8:
+                case Keys.K:
+                    dirToMove = Direction.UP;
+                    break;
+                case Keys.NumPad2:
+                case Keys.J:
+                    dirToMove = Direction.DOWN;
+                    break;
+                case Keys.T:
+                    if (Parent.CurrentMap.Targeter == null)
+                    {
+                        Parent.CurrentMap.Targeter = new Targeting(c => MessageLog.Write($"Targeted {c}"));
+                        // This should probably add itself.
+                        InputStack.Add(Parent.CurrentMap.Targeter);
+                    }
+                    break;
+                case Keys.LeftAlt:
+                    Parent.CurrentMap.EnemyStatusToggle = true;
+                    break;
+                default:
+                    handledSomething = false;
                     break;
             }
 

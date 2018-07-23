@@ -11,12 +11,13 @@ namespace GrimDank
             InputStack.Add(this);
         }
 
-        public bool HandleKeyboard(KeyboardState state)
+        public bool HandleKeyboard(Keys key, ModifierState modifierState)
         {
-            if (state.IsKeyDown(Keys.Escape))
+            switch (key)
             {
-                GrimDank.Instance.Exit();
-                return true;
+                case Keys.Escape:
+                    GrimDank.Instance.Exit();
+                    return true;
             }
 
             return false;

@@ -7,8 +7,8 @@ namespace GrimDank
     // before they can process input.
     interface IInputHandler
     {
-        // Called by InputStack if this object is added to its Handlers.  It respects input delay
-        // so this function will only be called if input delay (controlled by InputStack) allows it.
-        bool HandleKeyboard(KeyboardState state);
+        // Called by InputStack for each key pressed (if somebody higher in the stack hasn't already used).  It respects input
+        // delay so this function will only be called if input delay (controlled by InputStack) allows it.
+        bool HandleKeyboard(Keys key, ModifierState modifierState);
     }
 }
