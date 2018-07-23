@@ -1,4 +1,5 @@
 ﻿using GoRogue;
+using GrimDank.MObjects.Components;
 using GoRogue.DiceNotation;
 
 namespace GrimDank.MObjects
@@ -17,6 +18,8 @@ namespace GrimDank.MObjects
 
         //keeps you kicking ass and taking names
         public int DamageMitigation { get; private set; }
+
+        public AIBase AIComponent { get; protected set; }
 
         public string Name { get; private set; }
 

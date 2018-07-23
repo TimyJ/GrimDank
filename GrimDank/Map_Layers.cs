@@ -7,7 +7,7 @@ namespace GrimDank
     // I define this stuff in a separate C# file even though it is literally part of the same class
     // (Map). Just because this stuff rarely ever gets touched unless you are changing number/order
     // of layers and is mostly back-end related, so less clutter in the Map.cs file.
-    partial class Map : IInputHandler
+    partial class Map
     {
         // Dictionary is only used above for ease of maintenance, this is used as the actual code reference.
         private static readonly bool[] _layerCanHaveMultipleItems;

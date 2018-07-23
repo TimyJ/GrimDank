@@ -9,7 +9,7 @@ using GoRogue.MapViews;
 
 namespace GrimDank
 {
-    partial class Map : IInputHandler
+    partial class Map
     {
         // Layers of MObjects.
         private List<ISpatialMap<MObject>> _layers;
@@ -38,8 +38,6 @@ namespace GrimDank
                 else
                     _layers.Add(new SpatialMap<MObject>());
             }
-
-            InputStack.Add(this);
         }
 
         

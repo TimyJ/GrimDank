@@ -31,8 +31,9 @@ namespace GrimDank
         private readonly int TEST_MAP_HEIGHT = 250;
 
         public Map TestLevel { get; private set; }
-        public MObjects.Creature Player { get; private set; }
+        public MObjects.Player Player { get; private set; }
         public MapRenderer MapRenderer { get; private set; }
+        public TurnManager TurnManager { get; private set; }
 
         private GlobalKeyHandler _globalKeyHandler;
        
@@ -57,11 +58,12 @@ namespace GrimDank
             TestLevel.GenerateMap();
 
             Coord playerSpawnPos = TestLevel.WalkabilityMap.RandomPosition(true);
-            Player = new MObjects.Creature(playerSpawnPos, 100, 10, "1d8", 0);
-            Player.glyph = '@';
+            Player = new MObjects.Player(playerSpawnPos);
             TestLevel.Add(Player);
             TestLevel.SetupFOV(Player.Position);
             TestLevel.SpawnPunchingBags(100);
+
+            TurnManager = new TurnManager(TestLevel);
 
             counter = new FrameCounter();
 
@@ -125,6 +127,8 @@ namespace GrimDank
         {
             InputStack.Update(gameTime);
 
+            TurnManager.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -165,7 +169,5 @@ namespace GrimDank
             
             base.Draw(gameTime);
         }
-
-        
     }
 }
