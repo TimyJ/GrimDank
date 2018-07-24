@@ -47,6 +47,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controls.cs" />
     <Compile Include="FramerateCounter.cs" />
     <Compile Include="GlobalKeyHandler.cs" />
     <Compile Include="GrimDank.cs" />

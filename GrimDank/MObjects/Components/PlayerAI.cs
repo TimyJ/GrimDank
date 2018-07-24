@@ -32,58 +32,40 @@ namespace GrimDank.MObjects.Components
         public bool HandleKeyboard(Keys key, ModifierState modifierState)
         {
             bool handledSomething = true;
-
-            Direction dirToMove = Direction.NONE;
             Parent.CurrentMap.EnemyStatusToggle = false;
+            var dirToMove = Controls.Move(key);
 
-            switch (key)
+            if (dirToMove == Direction.NONE)
             {
-                case Keys.NumPad6:
-                case Keys.L:
-                    dirToMove = Direction.RIGHT;
-                    break;
-                case Keys.NumPad4:
-                case Keys.H:
-                    dirToMove = Direction.LEFT;
-                    break;
-                case Keys.NumPad8:
-                case Keys.K:
-                    dirToMove = Direction.UP;
-                    break;
-                case Keys.NumPad2:
-                case Keys.J:
-                    dirToMove = Direction.DOWN;
-                    break;
-                case Keys.T:
-                    if (Parent.CurrentMap.Targeter == null)
-                    {
-                        Parent.CurrentMap.Targeter = new Targeting(c => MessageLog.Write($"Targeted {c}"));
-                        // This should probably add itself.
-                        InputStack.Add(Parent.CurrentMap.Targeter);
-                    }
-                    break;
-                case Keys.LeftAlt:
-                    Parent.CurrentMap.EnemyStatusToggle = true;
-                    break;
-                default:
-                    handledSomething = false;
-                    break;
-            }
-
-            if (dirToMove != Direction.NONE)
-            {
-                if (!Parent.MoveIn(dirToMove))
+                switch (key)
                 {
-                    MObject mobject = Parent.CurrentMap.Raycast(Parent.Position + dirToMove);
-                    if (mobject is Creature mob) // Nice shorthand -- if mobjet is Creature, call it mob and let me work with it
-                    {
-                        mob.TakeDamage(10);
-                        IsTakingTurn = false;
-                    }
+                    case Keys.T:
+                        if (Parent.CurrentMap.Targeter == null)
+                        {
+                            Parent.CurrentMap.Targeter = new Targeting(c => MessageLog.Write($"Targeted {c}"));
+                            // This should probably add itself.
+                            InputStack.Add(Parent.CurrentMap.Targeter);
+                        }
+                        break;
+                    case Keys.LeftAlt:
+                        Parent.CurrentMap.EnemyStatusToggle = true;
+                        break;
+                    default:
+                        handledSomething = false;
+                        break;
                 }
-                else // We moved so our turn is done.
-                    IsTakingTurn = false;
             }
+            else if (!Parent.MoveIn(dirToMove))
+            {
+                MObject mobject = Parent.CurrentMap.Raycast(Parent.Position + dirToMove);
+                if (mobject is Creature mob) // Nice shorthand -- if mobjet is Creature, call it mob and let me work with it
+                {
+                    mob.TakeDamage(10);
+                    IsTakingTurn = false;
+                }
+            }
+            else // We moved so our turn is done.
+                IsTakingTurn = false;
 
             return handledSomething;
         }
