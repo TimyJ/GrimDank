@@ -24,8 +24,6 @@ namespace GrimDank
 
     static class InputStack
     {
-        static readonly Keys[] MODIFIER_KEYS = { Keys.LeftShift , Keys.RightShift, Keys.LeftAlt, Keys.RightAlt, Keys.RightControl, Keys.LeftControl };
-
         private static readonly double INPUT_DELAY = 0.04f;
         private static readonly double INITIAL_INPUT_DELAY = 0.8f;
 
@@ -74,36 +72,38 @@ namespace GrimDank
             UpdateForReleasedKeys(keyboardState); 
             previousPressed = keyboardState.GetPressedKeys();
 
-            UpdateInputLock(); 
+            UpdateInputLock();
 
             if (!_inputLocked && (!somethingPressedInitial || _timeSinceLastInput >= (somethingPressedSubsequent ? INPUT_DELAY : INITIAL_INPUT_DELAY)))
-            {
-                var modifierState = GetModifierState(keyboardState);
-
-                var handlers = new List<IInputHandler>(_handlers);
-                foreach (var key in keyboardState.GetPressedKeys())
-                {
-                    // Give each key a chance to handle the input.
-                    foreach (var handler in ((IEnumerable<IInputHandler>)handlers).Reverse())
-                    {
-                        if (handler.HandleKeyboard(key, modifierState))
-                        {
-                            _timeSinceLastInput = 0;
-                            if (somethingPressedInitial)
-                                somethingPressedSubsequent = true;
-                            else
-                                somethingPressedInitial = true;
-                            break;
-                        }
-                    }
-
-                }
-            }
-            // Input locked, so just count input-locked timer
-           else if (_inputLocked)
+                ProcessHandlers(keyboardState);
+            else if (_inputLocked) // Input locked, so just count input-locked timer
                 _timeElapsedSinceInputLock += gameTime.ElapsedGameTime.TotalSeconds;
-            else
+            else // Not locked and input delay says not enough time has passed.
                 _timeSinceLastInput += gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        static private void ProcessHandlers(KeyboardState keyboardState)
+        {
+            var modifierState = GetModifierState(keyboardState);
+
+            var handlers = new List<IInputHandler>(_handlers);
+            foreach (var key in keyboardState.GetPressedKeys())
+            {
+                // Give each key a chance to handle the input.
+                foreach (var handler in ((IEnumerable<IInputHandler>)handlers).Reverse())
+                {
+                    if (handler.HandleKeyboard(key, modifierState))
+                    {
+                        _timeSinceLastInput = 0;
+                        if (somethingPressedInitial)
+                            somethingPressedSubsequent = true;
+                        else
+                            somethingPressedInitial = true;
+                        break;
+                    }
+                }
+
+            }
         }
 
         static private ModifierState GetModifierState(KeyboardState keyState)

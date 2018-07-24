@@ -19,7 +19,8 @@ namespace GrimDank
         private static readonly Func<Coord, bool> DEFAULT_TARGET_VALIDATOR = c =>
                                                                             (GrimDank.Instance.TestLevel.Raycast(c, m => m is MObjects.Creature) != null);
 
-        // Default to just targeting creatures.
+        // Default to just targeting creatures. If you specify a targetPos that will be the start, otherwise it will be the position
+        // of the first valid target if not specified.
         public Targeting(Action<Coord> onTargetSelected, Coord targetPos = null, Func<Coord, bool> targetValidator = null)
         {
             _onTargetSelected = onTargetSelected;
